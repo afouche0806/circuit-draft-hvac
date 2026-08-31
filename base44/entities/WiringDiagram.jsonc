@@ -1,0 +1,28 @@
+{
+  "name": "WiringDiagram",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Title"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "hvac",
+        "electrical",
+        "mixed"
+      ],
+      "default": "hvac",
+      "title": "Category"
+    },
+    "diagram_data": {
+      "type": "string",
+      "title": "Diagram Data",
+      "description": "JSON string of { nodes, wires }"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}
