@@ -9,8 +9,8 @@ import Toolbar from '@/components/diagram/Toolbar';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 
-const CANVAS_W = 1800;
-const CANVAS_H = 1200;
+const CANVAS_W = 3000;
+const CANVAS_H = 2000;
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
