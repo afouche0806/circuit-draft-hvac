@@ -1,7 +1,7 @@
 import {
   Cpu, Fan, AirVent, Thermometer, Zap, BatteryCharging, ToggleLeft,
   ArrowLeftRight, Gauge, Battery, Minus, Plug, Shield, Lightbulb, Cog,
-  CircleDot, Triangle
+  CircleDot, Triangle, Layers
 } from 'lucide-react';
 
 const LR = [{ id: 'L', side: 'left' }, { id: 'R', side: 'right' }];
@@ -32,6 +32,15 @@ export const componentLibrary = [
       { type: 'switch', label: 'Switch', icon: ToggleLeft, color: '#f59e0b', terminals: LR },
       { type: 'receptacle', label: 'Receptacle', icon: Plug, color: '#f59e0b', terminals: LR },
       { type: 'breaker', label: 'Breaker', icon: Shield, color: '#f59e0b', terminals: LR },
+      { type: 'breaker_1phase', label: '1-Phase Breaker', icon: Shield, color: '#f59e0b', terminals: LR },
+      { type: 'breaker_3phase', label: '3-Phase Breaker', icon: Layers, color: '#f59e0b', terminals: [
+        { id: 'L1', side: 'left', offset: 0.25 },
+        { id: 'L2', side: 'left', offset: 0.5 },
+        { id: 'L3', side: 'left', offset: 0.75 },
+        { id: 'T1', side: 'right', offset: 0.25 },
+        { id: 'T2', side: 'right', offset: 0.5 },
+        { id: 'T3', side: 'right', offset: 0.75 }
+      ] },
       { type: 'lamp', label: 'Lamp', icon: Lightbulb, color: '#f59e0b', terminals: LR },
       { type: 'ground', label: 'Ground', icon: Triangle, color: '#f59e0b', terminals: [{ id: 'T', side: 'top' }] },
       { type: 'fuse', label: 'Fuse', icon: Shield, color: '#f59e0b', terminals: LR },
@@ -51,11 +60,12 @@ export const NODE_W = 104;
 export const NODE_H = 74;
 
 export function terminalPos(term, w = NODE_W, h = NODE_H) {
+  const o = term.offset ?? 0.5;
   switch (term.side) {
-    case 'left': return { x: 0, y: h / 2 };
-    case 'right': return { x: w, y: h / 2 };
-    case 'top': return { x: w / 2, y: 0 };
-    case 'bottom': return { x: w / 2, y: h };
+    case 'left': return { x: 0, y: o * h };
+    case 'right': return { x: w, y: o * h };
+    case 'top': return { x: o * w, y: 0 };
+    case 'bottom': return { x: o * w, y: h };
     default: return { x: 0, y: 0 };
   }
 }
