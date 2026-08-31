@@ -20,6 +20,11 @@
       "type": "string",
       "title": "Diagram Data",
       "description": "JSON string of { nodes, wires }"
+    },
+    "is_template": {
+      "type": "boolean",
+      "default": false,
+      "title": "Is Template"
     }
   },
   "required": [

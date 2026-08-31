@@ -209,6 +209,24 @@ export default function DiagramEditor() {
     }
   };
 
+  const handleSaveAsTemplate = async () => {
+    setSaving(true);
+    try {
+      const data = JSON.stringify({ nodes, wires });
+      await base44.entities.WiringDiagram.create({
+        title: (title.trim() || 'Untitled diagram') + ' (Template)',
+        category,
+        diagram_data: data,
+        is_template: true
+      });
+      toast({ title: 'Saved as template' });
+    } catch (err) {
+      toast({ title: 'Template save failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const hasSelection = !!(selectedNode || selectedWire);
 
   if (loading) {
@@ -228,6 +246,7 @@ export default function DiagramEditor() {
         onCategoryChange={setCategory}
         onBack={() => navigate('/')}
         onSave={handleSave}
+        onSaveAsTemplate={handleSaveAsTemplate}
         onDeleteSelected={deleteSelected}
         hasSelection={hasSelection}
         saving={saving}
