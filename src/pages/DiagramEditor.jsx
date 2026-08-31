@@ -6,6 +6,7 @@ import ComponentPalette from '@/components/diagram/ComponentPalette';
 import DiagramNode from '@/components/diagram/DiagramNode';
 import Wire from '@/components/diagram/Wire';
 import Toolbar from '@/components/diagram/Toolbar';
+import ZoomControls from '@/components/diagram/ZoomControls';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -31,6 +32,7 @@ export default function DiagramEditor() {
   const [dragging, setDragging] = useState(null);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(!!diagramId);
+  const [zoom, setZoom] = useState(1);
 
   const canvasRef = useRef(null);
 
@@ -60,7 +62,7 @@ export default function DiagramEditor() {
       setNodes((ns) =>
         ns.map((n) =>
           n.id === dragging.id
-            ? { ...n, x: dragging.origX + (e.clientX - dragging.startX), y: dragging.origY + (e.clientY - dragging.startY) }
+            ? { ...n, x: dragging.origX + (e.clientX - dragging.startX) / zoom, y: dragging.origY + (e.clientY - dragging.startY) / zoom }
             : n
         )
       );
@@ -72,7 +74,7 @@ export default function DiagramEditor() {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
     };
-  }, [dragging]);
+  }, [dragging, zoom]);
 
   // Delete key
   useEffect(() => {
@@ -96,7 +98,7 @@ export default function DiagramEditor() {
 
   const getCanvasPos = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    return { x: (e.clientX - rect.left) / zoom, y: (e.clientY - rect.top) / zoom };
   };
 
   const getTerminalAbs = (nodeId, termId) => {
@@ -252,7 +254,7 @@ export default function DiagramEditor() {
         saving={saving}
       />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1 overflow-hidden">
         <ComponentPalette tool={tool} setTool={setTool} />
 
         <div className="relative flex-1 overflow-auto">
@@ -267,6 +269,7 @@ export default function DiagramEditor() {
             </div>
           </div>
 
+          <div style={{ width: CANVAS_W * zoom, height: CANVAS_H * zoom }}>
           <div
             ref={canvasRef}
             onMouseDown={onCanvasMouseDown}
@@ -275,6 +278,8 @@ export default function DiagramEditor() {
             style={{
               width: CANVAS_W,
               height: CANVAS_H,
+              transform: `scale(${zoom})`,
+              transformOrigin: '0 0',
               backgroundImage:
                 'linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px)',
               backgroundSize: '24px 24px'
@@ -317,7 +322,9 @@ export default function DiagramEditor() {
               />
             ))}
           </div>
+          </div>
         </div>
+        <ZoomControls zoom={zoom} setZoom={setZoom} />
       </div>
     </div>
   );
