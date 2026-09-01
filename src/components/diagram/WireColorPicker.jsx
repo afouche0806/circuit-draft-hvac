@@ -2,9 +2,11 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 export const PHASE_COLORS = [
-  { value: '#ef4444', label: 'Red' },
-  { value: '#ffffff', label: 'White' },
-  { value: '#3b82f6', label: 'Blue' }
+  { value: '#ef4444', label: 'Red (L1)' },
+  { value: '#ffffff', label: 'White (L2)' },
+  { value: '#3b82f6', label: 'Blue (L3)' },
+  { value: '#000000', label: 'Neutral (Black)' },
+  { value: 'earth', label: 'Earth (Green/Yellow)' }
 ];
 
 export default function WireColorPicker({ value, onChange }) {
@@ -14,7 +16,7 @@ export default function WireColorPicker({ value, onChange }) {
         <span className="h-2 w-2 rounded-full bg-slate-400" />
         <h3 className="text-xs font-semibold text-slate-700">Wire Color</h3>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {PHASE_COLORS.map((c) => (
           <button
             key={c.value}
@@ -22,9 +24,13 @@ export default function WireColorPicker({ value, onChange }) {
             title={c.label}
             className={cn(
               'h-7 w-7 rounded-full border-2 transition',
-              value === c.value ? 'border-slate-900 ring-1 ring-slate-900' : 'border-slate-200'
+              value === c.value ? 'border-slate-900 ring-1 ring-slate-900' : 'border-slate-300'
             )}
-            style={{ background: c.value }}
+            style={
+              c.value === 'earth'
+                ? { background: 'repeating-linear-gradient(45deg, #16a34a 0 4px, #facc15 4px 8px)' }
+                : { background: c.value }
+            }
           />
         ))}
       </div>

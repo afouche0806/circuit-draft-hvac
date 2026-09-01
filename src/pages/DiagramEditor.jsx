@@ -287,6 +287,12 @@ export default function DiagramEditor() {
             }}
           >
             <svg className="absolute inset-0" width={CANVAS_W} height={CANVAS_H} style={{ overflow: 'visible' }}>
+              <defs>
+                <pattern id="wire-earth" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+                  <rect width="8" height="8" fill="#16a34a" />
+                  <rect width="4" height="8" fill="#facc15" />
+                </pattern>
+              </defs>
               <rect x={0} y={0} width={CANVAS_W} height={CANVAS_H} fill="transparent" />
               {wires.map((w) => {
                 const from = getTerminalAbs(w.from.node, w.from.term);
@@ -304,7 +310,7 @@ export default function DiagramEditor() {
                     <path
                       d={`M ${from.x} ${from.y} L ${mousePos.x} ${mousePos.y}`}
                       fill="none"
-                      stroke={wireColor}
+                      stroke={wireColor === 'earth' ? 'url(#wire-earth)' : wireColor}
                       strokeWidth={2}
                       strokeDasharray="5 4"
                     />
