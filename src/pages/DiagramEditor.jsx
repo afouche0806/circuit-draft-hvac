@@ -33,6 +33,7 @@ export default function DiagramEditor() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(!!diagramId);
   const [zoom, setZoom] = useState(1);
+  const [wireColor, setWireColor] = useState('#ef4444');
 
   const canvasRef = useRef(null);
 
@@ -162,7 +163,7 @@ export default function DiagramEditor() {
         (w.from.node === nodeId && w.from.term === termId && w.to.node === pendingTerm.node && w.to.term === pendingTerm.term)
     );
     if (!exists) {
-      setWires((ws) => [...ws, { id: uid(), from: pendingTerm, to: { node: nodeId, term: termId } }]);
+      setWires((ws) => [...ws, { id: uid(), from: pendingTerm, to: { node: nodeId, term: termId }, color: wireColor }]);
     }
     setPendingTerm(null);
   };
@@ -255,7 +256,7 @@ export default function DiagramEditor() {
       />
 
       <div className="relative flex flex-1 overflow-hidden">
-        <ComponentPalette tool={tool} setTool={setTool} />
+        <ComponentPalette tool={tool} setTool={setTool} wireColor={wireColor} setWireColor={setWireColor} />
 
         <div className="relative flex-1 overflow-auto">
           {/* hint bar */}
@@ -292,7 +293,7 @@ export default function DiagramEditor() {
                 const to = getTerminalAbs(w.to.node, w.to.term);
                 if (!from || !to) return null;
                 return (
-                  <Wire key={w.id} from={from} to={to} selected={selectedWire === w.id} onClick={(e) => onWireClick(e, w.id)} />
+                  <Wire key={w.id} from={from} to={to} selected={selectedWire === w.id} color={w.color} onClick={(e) => onWireClick(e, w.id)} />
                 );
               })}
               {pendingTerm &&
@@ -303,7 +304,7 @@ export default function DiagramEditor() {
                     <path
                       d={`M ${from.x} ${from.y} L ${mousePos.x} ${mousePos.y}`}
                       fill="none"
-                      stroke="#0ea5e9"
+                      stroke={wireColor}
                       strokeWidth={2}
                       strokeDasharray="5 4"
                     />

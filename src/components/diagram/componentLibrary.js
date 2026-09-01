@@ -16,7 +16,14 @@ export const componentLibrary = [
       { type: 'evaporator', label: 'Evaporator', icon: AirVent, color: '#0ea5e9', terminals: LR },
       { type: 'blower_motor', label: 'Blower Motor', icon: Fan, color: '#0ea5e9', terminals: LR },
       { type: 'thermostat', label: 'Thermostat', icon: Thermometer, color: '#0ea5e9', terminals: LR },
-      { type: 'contactor', label: 'Contactor', icon: Zap, color: '#0ea5e9', terminals: LR },
+      { type: 'contactor', label: 'Contactor', icon: Zap, color: '#0ea5e9', terminals: [
+        { id: 'L1', side: 'top', offset: 0.2 },
+        { id: 'L2', side: 'top', offset: 0.5 },
+        { id: 'L3', side: 'top', offset: 0.8 },
+        { id: 'T1', side: 'bottom', offset: 0.2 },
+        { id: 'T2', side: 'bottom', offset: 0.5 },
+        { id: 'T3', side: 'bottom', offset: 0.8 }
+      ] },
       { type: 'capacitor', label: 'Capacitor', icon: BatteryCharging, color: '#0ea5e9', terminals: LR },
       { type: 'relay', label: 'Relay', icon: ToggleLeft, color: '#0ea5e9', terminals: LR },
       { type: 'transformer', label: 'Transformer', icon: ArrowLeftRight, color: '#0ea5e9', terminals: LR },
@@ -34,12 +41,12 @@ export const componentLibrary = [
       { type: 'breaker', label: 'Breaker', icon: Shield, color: '#f59e0b', terminals: LR },
       { type: 'breaker_1phase', label: '1-Phase Breaker', icon: Shield, color: '#f59e0b', terminals: LR },
       { type: 'breaker_3phase', label: '3-Phase Breaker', icon: Layers, color: '#f59e0b', terminals: [
-        { id: 'L1', side: 'left', offset: 0.25 },
-        { id: 'L2', side: 'left', offset: 0.5 },
-        { id: 'L3', side: 'left', offset: 0.75 },
-        { id: 'T1', side: 'right', offset: 0.25 },
-        { id: 'T2', side: 'right', offset: 0.5 },
-        { id: 'T3', side: 'right', offset: 0.75 }
+        { id: 'L1', side: 'top', offset: 0.2 },
+        { id: 'L2', side: 'top', offset: 0.5 },
+        { id: 'L3', side: 'top', offset: 0.8 },
+        { id: 'T1', side: 'bottom', offset: 0.2 },
+        { id: 'T2', side: 'bottom', offset: 0.5 },
+        { id: 'T3', side: 'bottom', offset: 0.8 }
       ] },
       { type: 'lamp', label: 'Lamp', icon: Lightbulb, color: '#f59e0b', terminals: LR },
       { type: 'ground', label: 'Ground', icon: Triangle, color: '#f59e0b', terminals: [{ id: 'T', side: 'top' }] },

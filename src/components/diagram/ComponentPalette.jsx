@@ -1,8 +1,9 @@
 import React from 'react';
 import { componentLibrary } from '@/components/diagram/componentLibrary';
+import WireColorPicker from '@/components/diagram/WireColorPicker';
 import { cn } from '@/lib/utils';
 
-export default function ComponentPalette({ tool, setTool }) {
+export default function ComponentPalette({ tool, setTool, wireColor, setWireColor }) {
   return (
     <aside className="w-60 shrink-0 border-r border-slate-200 bg-white overflow-y-auto">
       <div className="p-3">
@@ -49,6 +50,7 @@ export default function ComponentPalette({ tool, setTool }) {
             </div>
           </div>
         ))}
+        <WireColorPicker value={wireColor} onChange={setWireColor} />
       </div>
     </aside>
   );
