@@ -30,7 +30,9 @@ export const componentLibrary = [
         { id: 'L3', side: 'top', offset: 0.8 },
         { id: 'T1', side: 'bottom', offset: 0.2 },
         { id: 'T2', side: 'bottom', offset: 0.5 },
-        { id: 'T3', side: 'bottom', offset: 0.8 }
+        { id: 'T3', side: 'bottom', offset: 0.8 },
+        { id: 'A1', side: 'left', offset: 0.5 },
+        { id: 'A2', side: 'right', offset: 0.5 }
       ] },
       { type: 'capacitor', label: 'Capacitor', icon: BatteryCharging, color: '#0ea5e9', terminals: LR },
       { type: 'relay', label: 'Relay', icon: ToggleLeft, color: '#0ea5e9', terminals: LR },

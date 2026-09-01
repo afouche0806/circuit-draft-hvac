@@ -29,7 +29,7 @@ export default function DiagramNode({ node, selected, pendingTerm, onBodyMouseDo
         return (
           <button
             key={t.id}
-            title={`${comp.label} · ${t.side}`}
+            title={`${comp.label} · ${t.id}`}
             onMouseDown={(e) => e.stopPropagation()}
             onClick={(e) => { e.stopPropagation(); onTerminalClick(node.id, t.id); }}
             className={cn(
