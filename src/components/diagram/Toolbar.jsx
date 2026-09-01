@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowLeft, Save, Trash2, LayoutTemplate } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import ExportButton from '@/components/diagram/ExportButton';
 
 const CATEGORIES = [
   { value: 'hvac', label: 'HVAC', color: '#0ea5e9' },
@@ -9,7 +10,7 @@ const CATEGORIES = [
   { value: 'mixed', label: 'Mixed', color: '#8b5cf6' }
 ];
 
-export default function Toolbar({ title, category, onTitleChange, onCategoryChange, onBack, onSave, onSaveAsTemplate, onDeleteSelected, hasSelection, saving }) {
+export default function Toolbar({ title, category, onTitleChange, onCategoryChange, onBack, onSave, onSaveAsTemplate, onDeleteSelected, hasSelection, saving, canvasRef, nodes }) {
   return (
     <header className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-2.5">
       <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
@@ -48,6 +49,7 @@ export default function Toolbar({ title, category, onTitleChange, onCategoryChan
           <Trash2 className="h-4 w-4" /> Delete
         </Button>
       )}
+      <ExportButton canvasRef={canvasRef} nodes={nodes} title={title} />
       <Button variant="outline" size="sm" onClick={onSaveAsTemplate} disabled={saving} className="gap-1.5">
         <LayoutTemplate className="h-4 w-4" /> Save as Template
       </Button>

@@ -253,6 +253,8 @@ export default function DiagramEditor() {
         onDeleteSelected={deleteSelected}
         hasSelection={hasSelection}
         saving={saving}
+        canvasRef={canvasRef}
+        nodes={nodes}
       />
 
       <div className="relative flex flex-1 overflow-hidden">
