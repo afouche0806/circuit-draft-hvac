@@ -1,24 +1,36 @@
 import React from 'react';
+import { Trash2 } from 'lucide-react';
 import { componentLibrary } from '@/components/diagram/componentLibrary';
 import WireColorPicker from '@/components/diagram/WireColorPicker';
 import { cn } from '@/lib/utils';
 
-export default function ComponentPalette({ tool, setTool, wireColor, setWireColor }) {
+export default function ComponentPalette({ tool, setTool, wireColor, setWireColor, removing, setRemoving }) {
   return (
     <aside className="w-60 shrink-0 border-r border-slate-200 bg-white overflow-y-auto">
       <div className="p-3">
         <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1">Palette</p>
         <p className="text-[11px] text-slate-400 mb-3">Click a part, then click the canvas to place it.</p>
         <button
-          onClick={() => setTool(null)}
+          onClick={() => { setTool(null); setRemoving(false); }}
           className={cn(
             "w-full mb-3 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium border transition",
-            tool === null
+            tool === null && !removing
               ? "border-slate-900 bg-slate-900 text-white"
               : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
           )}
         >
           Select / Move
+        </button>
+        <button
+          onClick={() => { setTool(null); setRemoving(!removing); }}
+          className={cn(
+            "w-full mb-3 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium border transition",
+            removing
+              ? "border-red-600 bg-red-600 text-white"
+              : "border-slate-200 bg-white text-slate-600 hover:bg-red-50 hover:text-red-600"
+          )}
+        >
+          <Trash2 className="h-4 w-4" /> Remove Parts
         </button>
 
         {componentLibrary.map((cat) => (
@@ -34,7 +46,7 @@ export default function ComponentPalette({ tool, setTool, wireColor, setWireColo
                 return (
                   <button
                     key={c.type}
-                    onClick={() => setTool(c.type)}
+                    onClick={() => { setTool(c.type); setRemoving(false); }}
                     className={cn(
                       "flex flex-col items-center gap-1 rounded-lg border px-1 py-2 transition",
                       active

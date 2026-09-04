@@ -34,6 +34,7 @@ export default function DiagramEditor() {
   const [loading, setLoading] = useState(!!diagramId);
   const [zoom, setZoom] = useState(1);
   const [wireColor, setWireColor] = useState('#ef4444');
+  const [removing, setRemoving] = useState(false);
 
   const canvasRef = useRef(null);
 
@@ -134,6 +135,11 @@ export default function DiagramEditor() {
 
   const onNodeBodyMouseDown = (e, node) => {
     e.stopPropagation();
+    if (removing) {
+      setNodes((ns) => ns.filter((n) => n.id !== node.id));
+      setWires((ws) => ws.filter((w) => w.from.node !== node.id && w.to.node !== node.id));
+      return;
+    }
     if (tool) return; // placing, not selecting
     setSelectedNode(node.id);
     setSelectedWire(null);
@@ -170,6 +176,10 @@ export default function DiagramEditor() {
 
   const onWireClick = (e, wireId) => {
     e.stopPropagation();
+    if (removing) {
+      setWires((ws) => ws.filter((w) => w.id !== wireId));
+      return;
+    }
     setSelectedWire(wireId);
     setSelectedNode(null);
     setPendingTerm(null);
@@ -258,7 +268,7 @@ export default function DiagramEditor() {
       />
 
       <div className="relative flex flex-1 overflow-hidden">
-        <ComponentPalette tool={tool} setTool={setTool} wireColor={wireColor} setWireColor={setWireColor} />
+        <ComponentPalette tool={tool} setTool={setTool} wireColor={wireColor} setWireColor={setWireColor} removing={removing} setRemoving={setRemoving} />
 
         <div className="relative flex-1 overflow-auto">
           {/* hint bar */}
@@ -266,6 +276,8 @@ export default function DiagramEditor() {
             <div className="pointer-events-auto mt-2 rounded-full bg-slate-900/90 px-3 py-1 text-[11px] font-medium text-white shadow">
               {pendingTerm
                 ? 'Click another terminal to connect — Esc to cancel'
+                : removing
+                ? 'Remove mode — click a part or wire to delete it. Click "Remove Parts" again to exit.'
                 : tool
                 ? `Placing ${componentMap[tool]?.label} — click the canvas`
                 : 'Click a part in the palette, then click the canvas. Drag parts to move. Click terminals to wire.'}
@@ -326,6 +338,7 @@ export default function DiagramEditor() {
                 node={node}
                 selected={selectedNode === node.id}
                 pendingTerm={pendingTerm}
+                removing={removing}
                 onBodyMouseDown={(e) => onNodeBodyMouseDown(e, node)}
                 onTerminalClick={onTerminalClick}
               />

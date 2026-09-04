@@ -2,7 +2,7 @@ import React from 'react';
 import { componentMap, terminalPos, NODE_W, NODE_H } from '@/components/diagram/componentLibrary';
 import { cn } from '@/lib/utils';
 
-export default function DiagramNode({ node, selected, pendingTerm, onBodyMouseDown, onTerminalClick }) {
+export default function DiagramNode({ node, selected, pendingTerm, removing, onBodyMouseDown, onTerminalClick }) {
   const comp = componentMap[node.type];
   if (!comp) return null;
   const Icon = comp.icon;
@@ -16,7 +16,7 @@ export default function DiagramNode({ node, selected, pendingTerm, onBodyMouseDo
         onMouseDown={onBodyMouseDown}
         className={cn(
           "relative h-full w-full rounded-xl border-2 bg-white shadow-sm flex flex-col items-center justify-center gap-1 cursor-move transition-shadow",
-          selected ? "border-sky-500 ring-2 ring-sky-200 shadow-md" : "border-slate-300 hover:shadow-md"
+          selected ? "border-sky-500 ring-2 ring-sky-200 shadow-md" : removing ? "border-red-300 hover:border-red-500 hover:bg-red-50" : "border-slate-300 hover:shadow-md"
         )}
       >
         <Icon className="h-6 w-6" style={{ color: comp.color }} />
