@@ -1,7 +1,7 @@
 import {
   Cpu, Fan, AirVent, Thermometer, Zap, BatteryCharging, ToggleLeft,
   ArrowLeftRight, Gauge, Battery, Minus, Plug, Shield, Lightbulb, Cog,
-  CircleDot, Triangle, Layers
+  CircleDot, Triangle, Layers, AlignJustify
 } from 'lucide-react';
 
 const LR = [{ id: 'L', side: 'left' }, { id: 'R', side: 'right' }];
@@ -68,6 +68,14 @@ export const componentLibrary = [
       ] },
       { type: 'lamp', label: 'Lamp', icon: Lightbulb, color: '#f59e0b', terminals: LR },
       { type: 'ground', label: 'Ground', icon: Triangle, color: '#f59e0b', terminals: [{ id: 'T', side: 'top' }] },
+      { type: 'neutral_bar', label: 'Neutral Bar', icon: AlignJustify, color: '#1f2937', terminals: [
+        { id: 'N1', side: 'top', offset: 0.15 },
+        { id: 'N2', side: 'top', offset: 0.5 },
+        { id: 'N3', side: 'top', offset: 0.85 },
+        { id: 'N4', side: 'bottom', offset: 0.15 },
+        { id: 'N5', side: 'bottom', offset: 0.5 },
+        { id: 'N6', side: 'bottom', offset: 0.85 }
+      ] },
       { type: 'fuse', label: 'Fuse', icon: Shield, color: '#f59e0b', terminals: LR },
       { type: 'motor', label: 'Motor', icon: Cog, color: '#f59e0b', terminals: LR },
       { type: 'junction', label: 'Junction', icon: CircleDot, color: '#f59e0b', terminals: [
