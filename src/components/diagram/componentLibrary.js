@@ -24,6 +24,14 @@ export const componentLibrary = [
       { type: 'evaporator', label: 'Evaporator', icon: AirVent, color: '#0ea5e9', terminals: LR },
       { type: 'blower_motor', label: 'Blower Motor', icon: Fan, color: '#0ea5e9', terminals: LR },
       { type: 'thermostat', label: 'Thermostat', icon: Thermometer, color: '#0ea5e9', terminals: LR },
+      { type: 'digital_controller', label: 'Digital Controller', icon: Cpu, color: '#0ea5e9', terminals: [
+        { id: 'L', side: 'left', offset: 0.25 },
+        { id: 'N', side: 'left', offset: 0.75 },
+        { id: 'COM', side: 'right', offset: 0.2 },
+        { id: 'NO', side: 'right', offset: 0.5 },
+        { id: 'NC', side: 'right', offset: 0.8 },
+        { id: 'TS', side: 'bottom', offset: 0.5 }
+      ] },
       { type: 'contactor', label: 'Contactor', icon: Zap, color: '#0ea5e9', terminals: [
         { id: 'L1', side: 'top', offset: 0.2 },
         { id: 'L2', side: 'top', offset: 0.5 },
