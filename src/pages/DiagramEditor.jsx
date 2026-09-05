@@ -5,6 +5,7 @@ import { componentMap, terminalPos, NODE_W, NODE_H } from '@/components/diagram/
 import ComponentPalette from '@/components/diagram/ComponentPalette';
 import DiagramNode from '@/components/diagram/DiagramNode';
 import Wire from '@/components/diagram/Wire';
+import TextLabel from '@/components/diagram/TextLabel';
 import Toolbar from '@/components/diagram/Toolbar';
 import ZoomControls from '@/components/diagram/ZoomControls';
 import { useToast } from '@/components/ui/use-toast';
@@ -25,10 +26,13 @@ export default function DiagramEditor() {
   const [nodes, setNodes] = useState([]);
   const [wires, setWires] = useState([]);
   const [lines, setLines] = useState([]);
+  const [labels, setLabels] = useState([]);
   const [tool, setTool] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedWire, setSelectedWire] = useState(null);
   const [selectedLine, setSelectedLine] = useState(null);
+  const [selectedLabel, setSelectedLabel] = useState(null);
+  const [editingLabel, setEditingLabel] = useState(null);
   const [pendingTerm, setPendingTerm] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(null);
@@ -69,6 +73,7 @@ export default function DiagramEditor() {
           setNodes(parsed.nodes || []);
           setWires(parsed.wires || []);
           setLines(parsed.lines || []);
+          setLabels(parsed.labels || []);
         } catch {
           setNodes([]);
           setWires([]);
@@ -81,13 +86,17 @@ export default function DiagramEditor() {
   useEffect(() => {
     if (!dragging) return;
     const onMove = (e) => {
-      setNodes((ns) =>
-        ns.map((n) =>
-          n.id === dragging.id
-            ? { ...n, x: dragging.origX + (e.clientX - dragging.startX) / zoom, y: dragging.origY + (e.clientY - dragging.startY) / zoom }
-            : n
-        )
-      );
+      const dx = (e.clientX - dragging.startX) / zoom;
+      const dy = (e.clientY - dragging.startY) / zoom;
+      if (dragging.kind === 'label') {
+        setLabels((ls) =>
+          ls.map((l) => (l.id === dragging.id ? { ...l, x: dragging.origX + dx, y: dragging.origY + dy } : l))
+        );
+      } else {
+        setNodes((ns) =>
+          ns.map((n) => (n.id === dragging.id ? { ...n, x: dragging.origX + dx, y: dragging.origY + dy } : n))
+        );
+      }
     };
     const onUp = () => setDragging(null);
     window.addEventListener('mousemove', onMove);
@@ -101,7 +110,7 @@ export default function DiagramEditor() {
   // Delete key
   useEffect(() => {
     const onKey = (e) => {
-      if ((e.key === 'Delete' || e.key === 'Backspace') && (selectedNode || selectedWire || selectedLine)) {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && (selectedNode || selectedWire || selectedLine || selectedLabel)) {
         const tag = e.target?.tagName;
         if (tag === 'INPUT' || tag === 'TEXTAREA') return;
         e.preventDefault();
@@ -112,12 +121,14 @@ export default function DiagramEditor() {
         setSelectedNode(null);
         setSelectedWire(null);
         setSelectedLine(null);
+        setSelectedLabel(null);
+        setEditingLabel(null);
         setTool(null);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [selectedNode, selectedWire, selectedLine]);
+  }, [selectedNode, selectedWire, selectedLine, selectedLabel]);
 
   const getCanvasPos = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();
@@ -136,6 +147,17 @@ export default function DiagramEditor() {
 
   const onCanvasMouseDown = (e) => {
     if (e.target === canvasRef.current || e.target.tagName === 'svg' || e.target.tagName === 'rect') {
+      if (tool === 'text') {
+        const pos = getCanvasPos(e);
+        const nl = { id: uid(), x: pos.x, y: pos.y, text: '' };
+        setLabels((ls) => [...ls, nl]);
+        setEditingLabel(nl.id);
+        setSelectedLabel(nl.id);
+        setSelectedNode(null);
+        setSelectedWire(null);
+        setSelectedLine(null);
+        return;
+      }
       if (tool === 'line') {
         const pos = getCanvasPos(e);
         const d = { x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y };
@@ -231,6 +253,35 @@ export default function DiagramEditor() {
     setPendingTerm(null);
   };
 
+  const onLabelBodyMouseDown = (e, label) => {
+    e.stopPropagation();
+    if (removing) {
+      setLabels((ls) => ls.filter((l) => l.id !== label.id));
+      return;
+    }
+    if (editingLabel) return;
+    setSelectedLabel(label.id);
+    setSelectedNode(null);
+    setSelectedWire(null);
+    setSelectedLine(null);
+    setPendingTerm(null);
+    setDragging({ id: label.id, kind: 'label', startX: e.clientX, startY: e.clientY, origX: label.x, origY: label.y });
+  };
+
+  const startLabelEdit = (id) => {
+    setEditingLabel(id);
+    setSelectedLabel(id);
+  };
+
+  const endLabelEdit = () => {
+    setEditingLabel(null);
+    setLabels((ls) => ls.filter((l) => l.text.trim() !== ''));
+  };
+
+  const onLabelTextChange = (id, text) => {
+    setLabels((ls) => ls.map((l) => (l.id === id ? { ...l, text } : l)));
+  };
+
   const deleteSelected = () => {
     if (selectedNode) {
       setNodes((ns) => ns.filter((n) => n.id !== selectedNode));
@@ -242,13 +293,16 @@ export default function DiagramEditor() {
     } else if (selectedLine) {
       setLines((ls) => ls.filter((l) => l.id !== selectedLine));
       setSelectedLine(null);
+    } else if (selectedLabel) {
+      setLabels((ls) => ls.filter((l) => l.id !== selectedLabel));
+      setSelectedLabel(null);
     }
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const data = JSON.stringify({ nodes, wires, lines });
+      const data = JSON.stringify({ nodes, wires, lines, labels });
       if (diagramId) {
         await base44.entities.WiringDiagram.update(diagramId, {
           title: title.trim() || 'Untitled diagram',
@@ -274,7 +328,7 @@ export default function DiagramEditor() {
   const handleSaveAsTemplate = async () => {
     setSaving(true);
     try {
-      const data = JSON.stringify({ nodes, wires, lines });
+      const data = JSON.stringify({ nodes, wires, lines, labels });
       await base44.entities.WiringDiagram.create({
         title: (title.trim() || 'Untitled diagram') + ' (Template)',
         category,
@@ -289,7 +343,7 @@ export default function DiagramEditor() {
     }
   };
 
-  const hasSelection = !!(selectedNode || selectedWire || selectedLine);
+  const hasSelection = !!(selectedNode || selectedWire || selectedLine || selectedLabel);
 
   if (loading) {
     return (
@@ -330,6 +384,8 @@ export default function DiagramEditor() {
                 ? 'Remove mode — click a part or wire to delete it. Click "Remove Parts" again to exit.'
                 : tool === 'line'
                 ? 'Draw a line — drag anywhere on the canvas. Pick the color below the palette.'
+                : tool === 'text'
+                ? 'Click the canvas to add a text label. Double-click a label to edit it later.'
                 : tool
                 ? `Placing ${componentMap[tool]?.label} — click the canvas`
                 : 'Click a part in the palette, then click the canvas. Drag parts to move. Click terminals to wire.'}
@@ -419,6 +475,20 @@ export default function DiagramEditor() {
                 removing={removing}
                 onBodyMouseDown={(e) => onNodeBodyMouseDown(e, node)}
                 onTerminalClick={onTerminalClick}
+              />
+            ))}
+
+            {labels.map((label) => (
+              <TextLabel
+                key={label.id}
+                label={label}
+                selected={selectedLabel === label.id}
+                editing={editingLabel === label.id}
+                removing={removing}
+                onBodyMouseDown={onLabelBodyMouseDown}
+                onEdit={startLabelEdit}
+                onEndEdit={endLabelEdit}
+                onTextChange={onLabelTextChange}
               />
             ))}
           </div>
