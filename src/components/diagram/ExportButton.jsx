@@ -9,7 +9,7 @@ import { NODE_W, NODE_H } from '@/components/diagram/componentLibrary';
 
 const PAD = 60;
 
-export default function ExportButton({ canvasRef, nodes, title }) {
+export default function ExportButton({ canvasRef, nodes, lines, title }) {
   const { toast } = useToast();
   const [busy, setBusy] = useState(null);
 
@@ -40,6 +40,12 @@ export default function ExportButton({ canvasRef, nodes, title }) {
         minY = Math.min(minY, n.y);
         maxX = Math.max(maxX, n.x + NODE_W);
         maxY = Math.max(maxY, n.y + NODE_H);
+      }
+      for (const l of lines || []) {
+        minX = Math.min(minX, l.x1, l.x2);
+        minY = Math.min(minY, l.y1, l.y2);
+        maxX = Math.max(maxX, l.x1, l.x2);
+        maxY = Math.max(maxY, l.y1, l.y2);
       }
       minX -= PAD; minY -= PAD; maxX += PAD; maxY += PAD;
       const bw = maxX - minX;
@@ -93,14 +99,21 @@ export default function ExportButton({ canvasRef, nodes, title }) {
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
       const margin = 24;
+      const headerH = 30;
+      pdf.setFontSize(15);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text(safeName, margin, margin + 12);
+      pdf.setFontSize(9);
+      pdf.setTextColor(120, 130, 145);
+      pdf.text(new Date().toLocaleDateString(), pageW - margin, margin + 12, { align: 'right' });
       const availW = pageW - margin * 2;
-      const availH = pageH - margin * 2;
+      const availH = pageH - margin * 2 - headerH;
       const ratio = canvas.width / canvas.height;
       let w = availW;
       let h = w / ratio;
       if (h > availH) { h = availH; w = h * ratio; }
       const x = (pageW - w) / 2;
-      const y = (pageH - h) / 2;
+      const y = margin + headerH + (availH - h) / 2;
       pdf.addImage(imgData, 'PNG', x, y, w, h);
       pdf.save(`${safeName}.pdf`);
       toast({ title: 'PDF exported' });

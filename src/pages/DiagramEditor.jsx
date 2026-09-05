@@ -314,6 +314,7 @@ export default function DiagramEditor() {
         saving={saving}
         canvasRef={canvasRef}
         nodes={nodes}
+        lines={lines}
       />
 
       <div className="relative flex flex-1 overflow-hidden">
