@@ -24,9 +24,11 @@ export default function DiagramEditor() {
   const [category, setCategory] = useState('hvac');
   const [nodes, setNodes] = useState([]);
   const [wires, setWires] = useState([]);
+  const [lines, setLines] = useState([]);
   const [tool, setTool] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedWire, setSelectedWire] = useState(null);
+  const [selectedLine, setSelectedLine] = useState(null);
   const [pendingTerm, setPendingTerm] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(null);
@@ -36,7 +38,24 @@ export default function DiagramEditor() {
   const [wireColor, setWireColor] = useState('#ef4444');
   const [removing, setRemoving] = useState(false);
 
+  const [linePreview, setLinePreview] = useState(null);
   const canvasRef = useRef(null);
+  const lineDraftRef = useRef(null);
+
+  // Commit a drawn line when the mouse is released
+  useEffect(() => {
+    const onUp = () => {
+      const d = lineDraftRef.current;
+      if (!d) return;
+      lineDraftRef.current = null;
+      setLinePreview(null);
+      if (Math.abs(d.x2 - d.x1) > 3 || Math.abs(d.y2 - d.y1) > 3) {
+        setLines((ls) => [...ls, { id: uid(), x1: d.x1, y1: d.y1, x2: d.x2, y2: d.y2, color: wireColor }]);
+      }
+    };
+    window.addEventListener('mouseup', onUp);
+    return () => window.removeEventListener('mouseup', onUp);
+  }, [wireColor]);
 
   useEffect(() => {
     if (!diagramId) return;
@@ -49,6 +68,7 @@ export default function DiagramEditor() {
           const parsed = JSON.parse(d.diagram_data || '{"nodes":[],"wires":[]}');
           setNodes(parsed.nodes || []);
           setWires(parsed.wires || []);
+          setLines(parsed.lines || []);
         } catch {
           setNodes([]);
           setWires([]);
@@ -81,7 +101,7 @@ export default function DiagramEditor() {
   // Delete key
   useEffect(() => {
     const onKey = (e) => {
-      if ((e.key === 'Delete' || e.key === 'Backspace') && (selectedNode || selectedWire)) {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && (selectedNode || selectedWire || selectedLine)) {
         const tag = e.target?.tagName;
         if (tag === 'INPUT' || tag === 'TEXTAREA') return;
         e.preventDefault();
@@ -91,12 +111,13 @@ export default function DiagramEditor() {
         setPendingTerm(null);
         setSelectedNode(null);
         setSelectedWire(null);
+        setSelectedLine(null);
         setTool(null);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [selectedNode, selectedWire]);
+  }, [selectedNode, selectedWire, selectedLine]);
 
   const getCanvasPos = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();
@@ -115,6 +136,13 @@ export default function DiagramEditor() {
 
   const onCanvasMouseDown = (e) => {
     if (e.target === canvasRef.current || e.target.tagName === 'svg' || e.target.tagName === 'rect') {
+      if (tool === 'line') {
+        const pos = getCanvasPos(e);
+        const d = { x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y };
+        lineDraftRef.current = d;
+        setLinePreview(d);
+        return;
+      }
       if (tool) {
         const pos = getCanvasPos(e);
         const newNode = { id: uid(), type: tool, x: pos.x - NODE_W / 2, y: pos.y - NODE_H / 2 };
@@ -131,6 +159,11 @@ export default function DiagramEditor() {
 
   const onCanvasMouseMove = (e) => {
     if (pendingTerm) setMousePos(getCanvasPos(e));
+    if (lineDraftRef.current) {
+      const pos = getCanvasPos(e);
+      lineDraftRef.current = { ...lineDraftRef.current, x2: pos.x, y2: pos.y };
+      setLinePreview(lineDraftRef.current);
+    }
   };
 
   const onNodeBodyMouseDown = (e, node) => {
@@ -182,6 +215,19 @@ export default function DiagramEditor() {
     }
     setSelectedWire(wireId);
     setSelectedNode(null);
+    setSelectedLine(null);
+    setPendingTerm(null);
+  };
+
+  const onLineClick = (e, lineId) => {
+    e.stopPropagation();
+    if (removing) {
+      setLines((ls) => ls.filter((l) => l.id !== lineId));
+      return;
+    }
+    setSelectedLine(lineId);
+    setSelectedNode(null);
+    setSelectedWire(null);
     setPendingTerm(null);
   };
 
@@ -193,13 +239,16 @@ export default function DiagramEditor() {
     } else if (selectedWire) {
       setWires((ws) => ws.filter((w) => w.id !== selectedWire));
       setSelectedWire(null);
+    } else if (selectedLine) {
+      setLines((ls) => ls.filter((l) => l.id !== selectedLine));
+      setSelectedLine(null);
     }
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const data = JSON.stringify({ nodes, wires });
+      const data = JSON.stringify({ nodes, wires, lines });
       if (diagramId) {
         await base44.entities.WiringDiagram.update(diagramId, {
           title: title.trim() || 'Untitled diagram',
@@ -225,7 +274,7 @@ export default function DiagramEditor() {
   const handleSaveAsTemplate = async () => {
     setSaving(true);
     try {
-      const data = JSON.stringify({ nodes, wires });
+      const data = JSON.stringify({ nodes, wires, lines });
       await base44.entities.WiringDiagram.create({
         title: (title.trim() || 'Untitled diagram') + ' (Template)',
         category,
@@ -240,7 +289,7 @@ export default function DiagramEditor() {
     }
   };
 
-  const hasSelection = !!(selectedNode || selectedWire);
+  const hasSelection = !!(selectedNode || selectedWire || selectedLine);
 
   if (loading) {
     return (
@@ -278,6 +327,8 @@ export default function DiagramEditor() {
                 ? 'Click another terminal to connect — Esc to cancel'
                 : removing
                 ? 'Remove mode — click a part or wire to delete it. Click "Remove Parts" again to exit.'
+                : tool === 'line'
+                ? 'Draw a line — drag anywhere on the canvas. Pick the color below the palette.'
                 : tool
                 ? `Placing ${componentMap[tool]?.label} — click the canvas`
                 : 'Click a part in the palette, then click the canvas. Drag parts to move. Click terminals to wire.'}
@@ -316,6 +367,32 @@ export default function DiagramEditor() {
                   <Wire key={w.id} from={from} to={to} selected={selectedWire === w.id} color={w.color} onClick={(e) => onWireClick(e, w.id)} />
                 );
               })}
+              {lines.map((l) => (
+                <line
+                  key={l.id}
+                  x1={l.x1}
+                  y1={l.y1}
+                  x2={l.x2}
+                  y2={l.y2}
+                  stroke={l.color === 'earth' ? 'url(#wire-earth)' : l.color}
+                  strokeWidth={selectedLine === l.id ? 4 : 2}
+                  strokeLinecap="round"
+                  className="cursor-pointer"
+                  onClick={(e) => onLineClick(e, l.id)}
+                />
+              ))}
+              {linePreview && (
+                <line
+                  x1={linePreview.x1}
+                  y1={linePreview.y1}
+                  x2={linePreview.x2}
+                  y2={linePreview.y2}
+                  stroke={wireColor === 'earth' ? 'url(#wire-earth)' : wireColor}
+                  strokeWidth={2}
+                  strokeDasharray="6 4"
+                  strokeLinecap="round"
+                />
+              )}
               {pendingTerm &&
                 (() => {
                   const from = getTerminalAbs(pendingTerm.node, pendingTerm.term);

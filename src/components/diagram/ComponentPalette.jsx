@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, PenLine } from 'lucide-react';
 import { componentLibrary } from '@/components/diagram/componentLibrary';
 import WireColorPicker from '@/components/diagram/WireColorPicker';
 import { cn } from '@/lib/utils';
@@ -20,6 +20,17 @@ export default function ComponentPalette({ tool, setTool, wireColor, setWireColo
           )}
         >
           Select / Move
+        </button>
+        <button
+          onClick={() => { setTool('line'); setRemoving(false); }}
+          className={cn(
+            "w-full mb-3 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium border transition",
+            tool === 'line'
+              ? "border-slate-900 bg-slate-900 text-white"
+              : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+          )}
+        >
+          <PenLine className="h-4 w-4" /> Draw Line
         </button>
         <button
           onClick={() => { setTool(null); setRemoving(!removing); }}
