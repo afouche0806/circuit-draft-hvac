@@ -145,7 +145,11 @@ const symbols = {
   breaker: breakerBase,
   breaker_1phase: (
     <g>
-      {breakerBase}
+      <g {...S}>
+        {dot(16, 26)}
+        {dot(88, 26)}
+        <path d="M18 26 L74 18" />
+      </g>
       {T(52, 14, '1~', 8)}
     </g>
   ),
