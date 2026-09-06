@@ -21,6 +21,14 @@ export const componentLibrary = [
         { id: 'T3', side: 'bottom', offset: 0.8 }
       ] },
       { type: 'condenser_fan', label: 'Condenser Fan', icon: Fan, color: '#0ea5e9', terminals: LR },
+      { type: 'condenser_3phase', label: '3-Phase Condenser', icon: Fan, color: '#0ea5e9', terminals: [
+        { id: 'L1', side: 'top', offset: 0.2 },
+        { id: 'L2', side: 'top', offset: 0.5 },
+        { id: 'L3', side: 'top', offset: 0.8 },
+        { id: 'T1', side: 'bottom', offset: 0.2 },
+        { id: 'T2', side: 'bottom', offset: 0.5 },
+        { id: 'T3', side: 'bottom', offset: 0.8 }
+      ] },
       { type: 'evaporator', label: 'Evaporator', icon: AirVent, color: '#0ea5e9', terminals: LR },
       { type: 'blower_motor', label: 'Blower Motor', icon: Fan, color: '#0ea5e9', terminals: LR },
       { type: 'thermostat', label: 'Thermostat', icon: Thermometer, color: '#0ea5e9', terminals: LR },
