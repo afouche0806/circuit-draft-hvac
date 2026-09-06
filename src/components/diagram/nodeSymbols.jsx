@@ -21,12 +21,10 @@ const threePhaseBox = (txt) => (
   </g>
 );
 
-const breakerBase = (
-  <g {...S}>
-    {dot(16, 34)}
-    {dot(88, 34)}
-    <path d="M18 34 L70 22" />
-    <path d="M72 27 L80 35 M72 35 L80 27" strokeWidth={1.4} />
+const breakerContact = (x) => (
+  <g key={x}>
+    <path d={`M${x} 6 L${x + 6} 56`} />
+    <path d={`M${x - 2} 48 L${x + 6} 56 M${x + 6} 48 L${x - 2} 56`} strokeWidth={1.4} />
   </g>
 );
 
@@ -72,36 +70,34 @@ const symbols = {
   ),
   contactor: (
     <g {...S}>
-      {dot(14, 18)}
-      {dot(90, 18)}
-      <path d="M16 18 L64 12" />
-      <rect x={40} y={28} width={24} height={16} rx={2} />
+      <path d="M52 6 L58 20" />
+      <rect x={40} y={26} width={24} height={16} rx={2} />
+      <path d="M52 42 V68" />
     </g>
   ),
   capacitor: (
     <g {...S}>
-      <path d="M14 27 H46 M46 10 V44 M58 10 V44 M58 27 H90" />
+      <path d="M52 6 V27 M36 27 H68 M36 35 H68 M52 35 V68" />
     </g>
   ),
   relay: (
     <g {...S}>
-      <rect x={34} y={10} width={36} height={32} rx={2} />
-      {T(52, 30, 'CR', 9)}
+      <path d="M52 6 V22 M52 52 V68" />
+      <rect x={36} y={22} width={32} height={30} rx={2} />
+      {T(52, 41, 'CR', 9)}
     </g>
   ),
   transformer: (
     <g {...S}>
-      <circle cx={45} cy={27} r={11} />
-      <circle cx={59} cy={27} r={11} />
-      <path d="M14 27 H34 M70 27 H90" />
+      <path d="M52 6 V16 M52 51 V68" />
+      <circle cx={52} cy={27} r={11} />
+      <circle cx={52} cy={40} r={11} />
     </g>
   ),
   pressure_switch: (
     <g {...S}>
-      {dot(14, 40)}
-      {dot(90, 40)}
-      <path d="M16 40 L64 30" />
-      {T(52, 20, 'PS', 9)}
+      <path d="M52 10 L60 52" />
+      {T(38, 42, 'PS', 9)}
     </g>
   ),
   precision_timer: (
@@ -121,47 +117,38 @@ const symbols = {
   ),
   battery: (
     <g {...S}>
-      <path d="M30 16 H74 M46 25 H58 M30 34 H74 M46 43 H58" />
+      <path d="M52 6 V26 M34 26 H70 M46 36 H58 M52 36 V68" />
     </g>
   ),
   resistor: (
     <g {...S}>
-      <path d="M14 27 H22 L28 15 L38 39 L48 15 L58 39 L68 15 L74 27 H90" />
+      <path d="M52 6 V16 L40 24 L64 40 L40 56 L52 62 V68" />
     </g>
   ),
   switch: (
     <g {...S}>
-      {dot(16, 34)}
-      {dot(88, 34)}
-      <path d="M18 34 L64 20" />
+      {dot(52, 12)}
+      {dot(52, 62)}
+      <path d="M52 14 L64 58" />
     </g>
   ),
   receptacle: (
     <g {...S}>
-      <path d="M32 36 A20 20 0 0 1 72 36 M32 36 H72" />
-      <path d="M44 36 V24 M60 36 V24" strokeWidth={1.5} />
+      <path d="M32 40 A20 20 0 0 1 72 40 M32 40 H72 M44 40 V28 M60 40 V28 M52 6 V20 M52 40 V68" />
     </g>
   ),
-  breaker: breakerBase,
+  breaker: (
+    <g {...S}>{breakerContact(52)}</g>
+  ),
   breaker_1phase: (
-    <g>
-      <g {...S}>
-        {dot(8, 26)}
-        {dot(62, 26)}
-        <path d="M10 26 L56 18" />
-      </g>
-      {T(35, 13, '1~', 8)}
+    <g {...S}>
+      {breakerContact(35)}
+      {T(50, 30, '1~', 8)}
     </g>
   ),
   breaker_3phase: (
     <g {...S}>
-      {[12, 26, 40].map((y) => (
-        <g key={y}>
-          {dot(16, y)}
-          {dot(88, y)}
-          <path d={`M18 ${y} L74 ${y - 8}`} />
-        </g>
-      ))}
+      {[24, 52, 80].map(breakerContact)}
     </g>
   ),
   lamp: (
@@ -183,9 +170,9 @@ const symbols = {
   ),
   fuse: (
     <g {...S}>
-      <path d="M14 27 H38 M66 27 H90" />
-      <rect x={38} y={17} width={28} height={20} rx={2} />
-      <path d="M38 27 H66" strokeWidth={1.2} />
+      <path d="M52 6 V26 M52 48 V68" />
+      <rect x={42} y={26} width={20} height={22} rx={2} />
+      <path d="M42 37 H62" strokeWidth={1.2} />
     </g>
   ),
   junction: (

@@ -4,7 +4,7 @@ import {
   CircleDot, Triangle, Layers, AlignJustify, Timer, ZapOff
 } from 'lucide-react';
 
-const LR = [{ id: 'L', side: 'left' }, { id: 'R', side: 'right' }];
+const LR = [{ id: 'L', side: 'top' }, { id: 'R', side: 'bottom' }];
 
 export const componentLibrary = [
   {
@@ -33,12 +33,12 @@ export const componentLibrary = [
       { type: 'blower_motor', label: 'Blower Motor', icon: Fan, color: '#0ea5e9', terminals: LR },
       { type: 'thermostat', label: 'Thermostat', icon: Thermometer, color: '#0ea5e9', terminals: LR },
       { type: 'digital_controller', label: 'Digital Controller', icon: Cpu, color: '#0ea5e9', terminals: [
-        { id: 'L', side: 'left', offset: 0.25 },
-        { id: 'N', side: 'left', offset: 0.75 },
-        { id: 'COM', side: 'right', offset: 0.2 },
-        { id: 'NO', side: 'right', offset: 0.5 },
-        { id: 'NC', side: 'right', offset: 0.8 },
-        { id: 'TS', side: 'bottom', offset: 0.5 }
+        { id: 'L', side: 'top', offset: 0.25 },
+        { id: 'TS', side: 'top', offset: 0.5 },
+        { id: 'N', side: 'top', offset: 0.75 },
+        { id: 'COM', side: 'bottom', offset: 0.2 },
+        { id: 'NO', side: 'bottom', offset: 0.5 },
+        { id: 'NC', side: 'bottom', offset: 0.8 }
       ] },
       { type: 'contactor', label: 'Contactor', icon: Zap, color: '#0ea5e9', terminals: [
         { id: 'L1', side: 'top', offset: 0.2 },
@@ -47,8 +47,8 @@ export const componentLibrary = [
         { id: 'T1', side: 'bottom', offset: 0.2 },
         { id: 'T2', side: 'bottom', offset: 0.5 },
         { id: 'T3', side: 'bottom', offset: 0.8 },
-        { id: 'A1', side: 'left', offset: 0.5 },
-        { id: 'A2', side: 'right', offset: 0.5 }
+        { id: 'A1', side: 'top', offset: 0.05 },
+        { id: 'A2', side: 'bottom', offset: 0.05 }
       ] },
       { type: 'capacitor', label: 'Capacitor', icon: BatteryCharging, color: '#0ea5e9', terminals: LR },
       { type: 'relay', label: 'Relay', icon: ToggleLeft, color: '#0ea5e9', terminals: LR },
@@ -57,15 +57,15 @@ export const componentLibrary = [
         { id: 'L1', side: 'top', offset: 0.2 },
         { id: 'L2', side: 'top', offset: 0.5 },
         { id: 'L3', side: 'top', offset: 0.8 },
-        { id: '95', side: 'left', offset: 0.25 },
-        { id: '96', side: 'left', offset: 0.75 }
+        { id: '95', side: 'bottom', offset: 0.25 },
+        { id: '96', side: 'bottom', offset: 0.75 }
       ] },
       { type: 'pressure_switch', label: 'Pressure Switch', icon: Gauge, color: '#0ea5e9', terminals: LR },
       { type: 'precision_timer', label: 'Precision Timer (Defrost)', icon: Timer, color: '#0ea5e9', terminals: [
-        { id: '1', side: 'left', offset: 0.25 },
-        { id: '2', side: 'left', offset: 0.75 },
-        { id: '3', side: 'right', offset: 0.25 },
-        { id: '4', side: 'right', offset: 0.75 }
+        { id: '1', side: 'top', offset: 0.25 },
+        { id: '2', side: 'top', offset: 0.75 },
+        { id: '3', side: 'bottom', offset: 0.25 },
+        { id: '4', side: 'bottom', offset: 0.75 }
       ] }
     ]
   },
@@ -100,7 +100,8 @@ export const componentLibrary = [
       { type: 'fuse', label: 'Fuse', icon: Shield, color: '#f59e0b', terminals: LR },
       { type: 'motor', label: 'Motor', icon: Cog, color: '#f59e0b', terminals: LR },
       { type: 'junction', label: 'Junction', icon: CircleDot, color: '#f59e0b', terminals: [
-        { id: 'L', side: 'left' }, { id: 'R', side: 'right' }, { id: 'T', side: 'top' }, { id: 'B', side: 'bottom' }
+        { id: 'T1', side: 'top', offset: 0.25 }, { id: 'T2', side: 'top', offset: 0.75 },
+        { id: 'B1', side: 'bottom', offset: 0.25 }, { id: 'B2', side: 'bottom', offset: 0.75 }
       ] }
     ]
   }
