@@ -78,7 +78,7 @@ export const componentLibrary = [
       { type: 'switch', label: 'Switch', icon: ToggleLeft, color: '#f59e0b', terminals: LR },
       { type: 'receptacle', label: 'Receptacle', icon: Plug, color: '#f59e0b', terminals: LR },
       { type: 'breaker', label: 'Breaker', icon: Shield, color: '#f59e0b', terminals: LR },
-      { type: 'breaker_1phase', label: '1-Phase Breaker', icon: Shield, color: '#f59e0b', terminals: LR },
+      { type: 'breaker_1phase', label: '1-Phase Breaker', icon: Shield, color: '#f59e0b', width: 70, terminals: LR },
       { type: 'breaker_3phase', label: '3-Phase Breaker', icon: Layers, color: '#f59e0b', terminals: [
         { id: 'L1', side: 'top', offset: 0.2 },
         { id: 'L2', side: 'top', offset: 0.5 },

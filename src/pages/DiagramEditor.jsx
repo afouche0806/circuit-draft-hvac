@@ -141,7 +141,7 @@ export default function DiagramEditor() {
     const comp = componentMap[node.type];
     const term = comp?.terminals.find((t) => t.id === termId);
     if (!term) return null;
-    const p = terminalPos(term);
+    const p = terminalPos(term, comp.width || NODE_W);
     return { x: node.x + p.x, y: node.y + p.y };
   };
 

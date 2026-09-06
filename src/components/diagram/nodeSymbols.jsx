@@ -146,11 +146,11 @@ const symbols = {
   breaker_1phase: (
     <g>
       <g {...S}>
-        {dot(16, 26)}
-        {dot(88, 26)}
-        <path d="M18 26 L74 18" />
+        {dot(8, 26)}
+        {dot(62, 26)}
+        <path d="M10 26 L56 18" />
       </g>
-      {T(52, 14, '1~', 8)}
+      {T(35, 13, '1~', 8)}
     </g>
   ),
   breaker_3phase: (

@@ -7,11 +7,12 @@ export default function DiagramNode({ node, selected, pendingTerm, removing, onB
   const comp = componentMap[node.type];
   if (!comp) return null;
   const Icon = comp.icon;
+  const w = comp.width || NODE_W;
 
   return (
     <div
       className="absolute select-none"
-      style={{ left: node.x, top: node.y, width: NODE_W, height: NODE_H }}
+      style={{ left: node.x, top: node.y, width: w, height: NODE_H }}
     >
       <div
         onMouseDown={onBodyMouseDown}
@@ -20,7 +21,7 @@ export default function DiagramNode({ node, selected, pendingTerm, removing, onB
           selected ? "border-sky-500 ring-2 ring-sky-200 shadow-md" : removing ? "border-red-300 hover:border-red-500 hover:bg-red-50" : "border-slate-300 hover:shadow-md"
         )}
       >
-        <svg className="absolute inset-0" viewBox="0 0 104 74" width="100%" height="100%">
+        <svg className="absolute inset-0" viewBox={`0 0 ${w} ${NODE_H}`} width="100%" height="100%">
           <NodeSymbol type={node.type} />
         </svg>
         <span className="absolute bottom-0.5 left-0 right-0 truncate px-1 text-center text-[9px] font-semibold leading-none text-slate-500">
@@ -33,7 +34,7 @@ export default function DiagramNode({ node, selected, pendingTerm, removing, onB
       </div>
 
       {comp.terminals.map((t) => {
-        const p = terminalPos(t);
+        const p = terminalPos(t, w);
         const isPending = pendingTerm && pendingTerm.node === node.id && pendingTerm.term === t.id;
         return (
           <button
