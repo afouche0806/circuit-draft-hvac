@@ -1,7 +1,7 @@
 import {
   Cpu, Fan, AirVent, Thermometer, Zap, BatteryCharging, ToggleLeft,
   ArrowLeftRight, Gauge, Battery, Minus, Plug, Shield, Lightbulb, Cog,
-  CircleDot, Triangle, Layers, AlignJustify, Timer
+  CircleDot, Triangle, Layers, AlignJustify, Timer, ZapOff
 } from 'lucide-react';
 
 const LR = [{ id: 'L', side: 'left' }, { id: 'R', side: 'right' }];
@@ -53,6 +53,13 @@ export const componentLibrary = [
       { type: 'capacitor', label: 'Capacitor', icon: BatteryCharging, color: '#0ea5e9', terminals: LR },
       { type: 'relay', label: 'Relay', icon: ToggleLeft, color: '#0ea5e9', terminals: LR },
       { type: 'transformer', label: 'Transformer', icon: ArrowLeftRight, color: '#0ea5e9', terminals: LR },
+      { type: 'phase_failure_relay', label: 'Phase Failure Relay', icon: ZapOff, color: '#0ea5e9', terminals: [
+        { id: 'L1', side: 'top', offset: 0.2 },
+        { id: 'L2', side: 'top', offset: 0.5 },
+        { id: 'L3', side: 'top', offset: 0.8 },
+        { id: '95', side: 'left', offset: 0.25 },
+        { id: '96', side: 'left', offset: 0.75 }
+      ] },
       { type: 'pressure_switch', label: 'Pressure Switch', icon: Gauge, color: '#0ea5e9', terminals: LR },
       { type: 'precision_timer', label: 'Precision Timer (Defrost)', icon: Timer, color: '#0ea5e9', terminals: [
         { id: '1', side: 'left', offset: 0.25 },
