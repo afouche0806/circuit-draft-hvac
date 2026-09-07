@@ -1,8 +1,6 @@
 import React from 'react';
 
-export default function Wire({ from, to, selected, onClick, color }) {
-  const midX = (from.x + to.x) / 2;
-  const d = `M ${from.x} ${from.y} L ${midX} ${from.y} L ${midX} ${to.y} L ${to.x} ${to.y}`;
+export default function Wire({ d, from, to, selected, onClick, color }) {
   const isEarth = color === 'earth';
   const strokeColor = isEarth ? 'url(#wire-earth)' : (color || '#334155');
   const dotColor = isEarth ? '#16a34a' : (color || '#334155');
