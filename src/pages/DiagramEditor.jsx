@@ -148,6 +148,33 @@ export default function DiagramEditor() {
     return { x: node.x + p.x, y: node.y + p.y };
   };
 
+  // Auto-connect a newly placed part to the nearest terminal of the closest existing part
+  const autoConnect = (newNode) => {
+    if (nodes.length === 0) return;
+    const newComp = componentMap[newNode.type];
+    if (!newComp) return;
+    const nw = newComp.width || NODE_W;
+    let best = null;
+    nodes.forEach((n) => {
+      const comp = componentMap[n.type];
+      if (!comp) return;
+      const cw = comp.width || NODE_W;
+      comp.terminals.forEach((t) => {
+        const tp = terminalPos(t, cw);
+        newComp.terminals.forEach((nt) => {
+          const np = terminalPos(nt, nw);
+          const d = Math.hypot(n.x + tp.x - (newNode.x + np.x), n.y + tp.y - (newNode.y + np.y));
+          if (!best || d < best.d) {
+            best = { d, from: { node: n.id, term: t.id }, to: { node: newNode.id, term: nt.id } };
+          }
+        });
+      });
+    });
+    if (best) {
+      setWires((ws) => [...ws, { id: uid(), from: best.from, to: best.to, color: wireColor }]);
+    }
+  };
+
   const onCanvasMouseDown = (e) => {
     if (e.target === canvasRef.current || e.target.tagName === 'svg' || e.target.tagName === 'rect') {
       if (tool === 'text') {
@@ -172,6 +199,7 @@ export default function DiagramEditor() {
         const pos = getCanvasPos(e);
         const newNode = { id: uid(), type: tool, x: pos.x - NODE_W / 2, y: pos.y - NODE_H / 2 };
         setNodes((ns) => [...ns, newNode]);
+        autoConnect(newNode);
         setSelectedNode(newNode.id);
         setSelectedWire(null);
       } else {
