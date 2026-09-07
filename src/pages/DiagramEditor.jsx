@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { componentMap, terminalPos, NODE_W, NODE_H } from '@/components/diagram/componentLibrary';
+import { routeWire, routeLine, pointsToPath } from '@/components/diagram/wireRouter';
 import ComponentPalette from '@/components/diagram/ComponentPalette';
 import DiagramNode from '@/components/diagram/DiagramNode';
 import Wire from '@/components/diagram/Wire';
@@ -15,9 +16,6 @@ const CANVAS_W = 3000;
 const CANVAS_H = 2000;
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-
-// Free-draw lines route as an elbow: vertical from the start, then horizontal to the end
-const elbowPath = (l) => `M ${l.x1} ${l.y1} L ${l.x1} ${l.y2} L ${l.x2} ${l.y2}`;
 
 export default function DiagramEditor() {
   const { diagramId } = useParams();
@@ -147,6 +145,38 @@ export default function DiagramEditor() {
     const p = terminalPos(term, comp.width || NODE_W);
     return { x: node.x + p.x, y: node.y + p.y };
   };
+
+  // Wires and free-draw lines are re-routed around parts whenever parts move
+  const wireRoutes = useMemo(
+    () =>
+      wires
+        .map((w) => {
+          const fromNode = nodes.find((n) => n.id === w.from.node);
+          const toNode = nodes.find((n) => n.id === w.to.node);
+          const from = fromNode ? getTerminalAbs(w.from.node, w.from.term) : null;
+          const to = toNode ? getTerminalAbs(w.to.node, w.to.term) : null;
+          if (!from || !to) return null;
+          return {
+            id: w.id,
+            color: w.color,
+            from,
+            to,
+            d: pointsToPath(routeWire(from, fromNode, to, toNode, nodes))
+          };
+        })
+        .filter(Boolean),
+    [wires, nodes]
+  );
+
+  const lineRoutes = useMemo(
+    () =>
+      lines.map((l) => ({
+        id: l.id,
+        color: l.color,
+        d: pointsToPath(routeLine({ x: l.x1, y: l.y1 }, { x: l.x2, y: l.y2 }, nodes))
+      })),
+    [lines, nodes]
+  );
 
   // Auto-connect a newly placed part to the nearest terminal of the closest existing part
   const autoConnect = (newNode) => {
@@ -414,7 +444,7 @@ export default function DiagramEditor() {
                 : removing
                 ? 'Remove mode — click a part or wire to delete it. Click "Remove Parts" again to exit.'
                 : tool === 'line'
-                ? 'Draw a line — drag on the canvas; it routes vertically then horizontally. Pick the color below the palette.'
+                ? 'Draw a line — drag on the canvas; lines route around parts automatically. Pick the color below the palette.'
                 : tool === 'text'
                 ? 'Click the canvas to add a text label. Double-click a label to edit it later.'
                 : tool
@@ -447,21 +477,24 @@ export default function DiagramEditor() {
                 </pattern>
               </defs>
               <rect x={0} y={0} width={CANVAS_W} height={CANVAS_H} fill="transparent" />
-              {wires.map((w) => {
-                const from = getTerminalAbs(w.from.node, w.from.term);
-                const to = getTerminalAbs(w.to.node, w.to.term);
-                if (!from || !to) return null;
-                return (
-                  <Wire key={w.id} from={from} to={to} selected={selectedWire === w.id} color={w.color} onClick={(e) => onWireClick(e, w.id)} />
-                );
-              })}
-              {lines.map((l) => (
-                <g key={l.id} className="cursor-pointer" onClick={(e) => onLineClick(e, l.id)}>
-                  <path d={elbowPath(l)} stroke="transparent" strokeWidth={12} fill="none" />
+              {wireRoutes.map((r) => (
+                <Wire
+                  key={r.id}
+                  d={r.d}
+                  from={r.from}
+                  to={r.to}
+                  selected={selectedWire === r.id}
+                  color={r.color}
+                  onClick={(e) => onWireClick(e, r.id)}
+                />
+              ))}
+              {lineRoutes.map((r) => (
+                <g key={r.id} className="cursor-pointer" onClick={(e) => onLineClick(e, r.id)}>
+                  <path d={r.d} stroke="transparent" strokeWidth={12} fill="none" />
                   <path
-                    d={elbowPath(l)}
-                    stroke={l.color === 'earth' ? 'url(#wire-earth)' : l.color}
-                    strokeWidth={selectedLine === l.id ? 4 : 2}
+                    d={r.d}
+                    stroke={r.color === 'earth' ? 'url(#wire-earth)' : r.color}
+                    strokeWidth={selectedLine === r.id ? 4 : 2}
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     fill="none"
@@ -470,7 +503,7 @@ export default function DiagramEditor() {
               ))}
               {linePreview && (
                 <path
-                  d={elbowPath(linePreview)}
+                  d={pointsToPath(routeLine({ x: linePreview.x1, y: linePreview.y1 }, { x: linePreview.x2, y: linePreview.y2 }, nodes))}
                   stroke={wireColor === 'earth' ? 'url(#wire-earth)' : wireColor}
                   strokeWidth={2}
                   strokeDasharray="6 4"
