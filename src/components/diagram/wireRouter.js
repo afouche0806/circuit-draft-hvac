@@ -6,6 +6,7 @@ const PAD = 12; // clearance kept around every part
 const LEAD = 28; // straight stub leaving a terminal before routing starts
 const REGION = 6; // grid cells of search margin around the endpoints
 const TURN = 3; // extra cost per direction change (keeps runs straight)
+const AVOID = 5; // extra cost for cells already used by another path
 
 const DIRS = [
   [0, -1],
@@ -75,7 +76,7 @@ class MinHeap {
   }
 }
 
-function astar(A, B, minX, minY, W, H, blocked) {
+function astar(A, B, minX, minY, W, H, blocked, penalty) {
   const total = W * H * 4;
   const g = new Float64Array(total).fill(Infinity);
   const parent = new Int32Array(total).fill(-1);
@@ -108,7 +109,7 @@ function astar(A, B, minX, minY, W, H, blocked) {
       // endpoints themselves are always allowed (line may start/end on a part)
       const isEndpoint = (nx === A.x && ny === A.y) || (nx === B.x && ny === B.y);
       if (blocked[(ny - minY) * W + (nx - minX)] && !isEndpoint) continue;
-      const step = 1 + (nd !== cur.d ? TURN : 0);
+      const step = 1 + (nd !== cur.d ? TURN : 0) + penalty[(ny - minY) * W + (nx - minX)];
       const ng = g[cur.k] + step;
       if (ng < g[nk]) {
         g[nk] = ng;
@@ -144,7 +145,7 @@ function simplify(pts) {
   return out;
 }
 
-function findRoute(a, b, obstacles) {
+function findRoute(a, b, obstacles, occupied) {
   const A = { x: Math.round(a.x / GRID), y: Math.round(a.y / GRID) };
   const B = { x: Math.round(b.x / GRID), y: Math.round(b.y / GRID) };
   const minX = Math.min(A.x, B.x) - REGION;
@@ -168,7 +169,17 @@ function findRoute(a, b, obstacles) {
     }
   }
 
-  const cells = astar(A, B, minX, minY, W, H, blocked);
+  // cells taken by already-routed paths are expensive so each path keeps its own space
+  const penalty = new Float32Array(W * H);
+  if (occupied && occupied.size) {
+    for (let gy = 0; gy < H; gy++) {
+      for (let gx = 0; gx < W; gx++) {
+        if (occupied.has(`${minX + gx},${minY + gy}`)) penalty[gy * W + gx] = AVOID;
+      }
+    }
+  }
+
+  const cells = astar(A, B, minX, minY, W, H, blocked, penalty);
   if (!cells) return [a, b]; // no way around — fall back to a direct line
   const pts = cells.map((c) => ({ x: c.x * GRID, y: c.y * GRID }));
   pts[0] = { x: a.x, y: a.y };
@@ -177,18 +188,26 @@ function findRoute(a, b, obstacles) {
 }
 
 // Route a terminal-to-terminal wire: stub out of each terminal, pathfind between
-export function routeWire(from, fromNode, to, toNode, nodes) {
+export function routeWire(from, fromNode, to, toNode, nodes, occupied) {
   const obstacles = buildObstacles(nodes);
   const s = stub(from, fromNode);
   const e = stub(to, toNode);
-  const mid = findRoute(s, e, obstacles);
+  const mid = findRoute(s, e, obstacles, occupied);
   return simplify([from, ...mid, to]);
 }
 
 // Route a free-draw line between two arbitrary points
-export function routeLine(a, b, nodes) {
+export function routeLine(a, b, nodes, occupied) {
   const obstacles = buildObstacles(nodes);
-  return findRoute(a, b, obstacles);
+  return findRoute(a, b, obstacles, occupied);
+}
+
+// Mark a routed path's cells so later paths keep their own space
+export function occupyPath(pts, occupied) {
+  pts.forEach((p, i) => {
+    if (i === 0 || i === pts.length - 1) return;
+    occupied.add(`${Math.round(p.x / GRID)},${Math.round(p.y / GRID)}`);
+  });
 }
 
 export function pointsToPath(pts) {

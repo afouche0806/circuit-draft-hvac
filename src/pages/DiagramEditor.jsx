@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { componentMap, terminalPos, NODE_W, NODE_H } from '@/components/diagram/componentLibrary';
-import { routeWire, routeLine, pointsToPath } from '@/components/diagram/wireRouter';
+import { routeWire, routeLine, pointsToPath, occupyPath } from '@/components/diagram/wireRouter';
 import ComponentPalette from '@/components/diagram/ComponentPalette';
 import DiagramNode from '@/components/diagram/DiagramNode';
 import Wire from '@/components/diagram/Wire';
@@ -146,37 +146,29 @@ export default function DiagramEditor() {
     return { x: node.x + p.x, y: node.y + p.y };
   };
 
-  // Wires and free-draw lines are re-routed around parts whenever parts move
-  const wireRoutes = useMemo(
-    () =>
-      wires
-        .map((w) => {
-          const fromNode = nodes.find((n) => n.id === w.from.node);
-          const toNode = nodes.find((n) => n.id === w.to.node);
-          const from = fromNode ? getTerminalAbs(w.from.node, w.from.term) : null;
-          const to = toNode ? getTerminalAbs(w.to.node, w.to.term) : null;
-          if (!from || !to) return null;
-          return {
-            id: w.id,
-            color: w.color,
-            from,
-            to,
-            d: pointsToPath(routeWire(from, fromNode, to, toNode, nodes))
-          };
-        })
-        .filter(Boolean),
-    [wires, nodes]
-  );
-
-  const lineRoutes = useMemo(
-    () =>
-      lines.map((l) => ({
-        id: l.id,
-        color: l.color,
-        d: pointsToPath(routeLine({ x: l.x1, y: l.y1 }, { x: l.x2, y: l.y2 }, nodes))
-      })),
-    [lines, nodes]
-  );
+  // Wires and free-draw lines are re-routed around parts whenever parts move.
+  // Each routed path claims its cells so the next one keeps its own space.
+  const { wireRoutes, lineRoutes } = useMemo(() => {
+    const occupied = new Set();
+    const wireRoutes = wires
+      .map((w) => {
+        const fromNode = nodes.find((n) => n.id === w.from.node);
+        const toNode = nodes.find((n) => n.id === w.to.node);
+        const from = fromNode ? getTerminalAbs(w.from.node, w.from.term) : null;
+        const to = toNode ? getTerminalAbs(w.to.node, w.to.term) : null;
+        if (!from || !to) return null;
+        const pts = routeWire(from, fromNode, to, toNode, nodes, occupied);
+        occupyPath(pts, occupied);
+        return { id: w.id, color: w.color, from, to, d: pointsToPath(pts) };
+      })
+      .filter(Boolean);
+    const lineRoutes = lines.map((l) => {
+      const pts = routeLine({ x: l.x1, y: l.y1 }, { x: l.x2, y: l.y2 }, nodes, occupied);
+      occupyPath(pts, occupied);
+      return { id: l.id, color: l.color, d: pointsToPath(pts) };
+    });
+    return { wireRoutes, lineRoutes };
+  }, [wires, lines, nodes]);
 
   // Auto-connect a newly placed part to the nearest terminal of the closest existing part
   const autoConnect = (newNode) => {
