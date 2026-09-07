@@ -16,6 +16,9 @@ const CANVAS_H = 2000;
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
+// Free-draw lines route as an elbow: vertical from the start, then horizontal to the end
+const elbowPath = (l) => `M ${l.x1} ${l.y1} L ${l.x1} ${l.y2} L ${l.x2} ${l.y2}`;
+
 export default function DiagramEditor() {
   const { diagramId } = useParams();
   const navigate = useNavigate();
@@ -383,7 +386,7 @@ export default function DiagramEditor() {
                 : removing
                 ? 'Remove mode — click a part or wire to delete it. Click "Remove Parts" again to exit.'
                 : tool === 'line'
-                ? 'Draw a line — drag anywhere on the canvas. Pick the color below the palette.'
+                ? 'Draw a line — drag on the canvas; it routes vertically then horizontally. Pick the color below the palette.'
                 : tool === 'text'
                 ? 'Click the canvas to add a text label. Double-click a label to edit it later.'
                 : tool
@@ -425,29 +428,27 @@ export default function DiagramEditor() {
                 );
               })}
               {lines.map((l) => (
-                <line
-                  key={l.id}
-                  x1={l.x1}
-                  y1={l.y1}
-                  x2={l.x2}
-                  y2={l.y2}
-                  stroke={l.color === 'earth' ? 'url(#wire-earth)' : l.color}
-                  strokeWidth={selectedLine === l.id ? 4 : 2}
-                  strokeLinecap="round"
-                  className="cursor-pointer"
-                  onClick={(e) => onLineClick(e, l.id)}
-                />
+                <g key={l.id} className="cursor-pointer" onClick={(e) => onLineClick(e, l.id)}>
+                  <path d={elbowPath(l)} stroke="transparent" strokeWidth={12} fill="none" />
+                  <path
+                    d={elbowPath(l)}
+                    stroke={l.color === 'earth' ? 'url(#wire-earth)' : l.color}
+                    strokeWidth={selectedLine === l.id ? 4 : 2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                  />
+                </g>
               ))}
               {linePreview && (
-                <line
-                  x1={linePreview.x1}
-                  y1={linePreview.y1}
-                  x2={linePreview.x2}
-                  y2={linePreview.y2}
+                <path
+                  d={elbowPath(linePreview)}
                   stroke={wireColor === 'earth' ? 'url(#wire-earth)' : wireColor}
                   strokeWidth={2}
                   strokeDasharray="6 4"
                   strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
                 />
               )}
               {pendingTerm &&
