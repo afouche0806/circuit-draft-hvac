@@ -9,6 +9,7 @@ import ScrollToTop from './components/ScrollToTop';
 // Add page imports here
 import Home from './pages/Home';
 import DiagramEditor from './pages/DiagramEditor';
+import Archive from './pages/Archive';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -38,6 +39,7 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* Add your page Route elements here */}
       <Route path="/" element={<Home />} />
+      <Route path="/archive" element={<Archive />} />
       <Route path="/editor" element={<DiagramEditor key="new" />} />
       <Route path="/editor/:diagramId" element={<DiagramEditor key="edit" />} />
       <Route path="*" element={<PageNotFound />} />

@@ -2,15 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Plus, Pencil, Trash2, Zap, Fan, ArrowRight, LayoutTemplate, Copy } from 'lucide-react';
+import { Plus, Pencil, Trash2, Zap, Fan, Archive as ArchiveIcon, LayoutTemplate, Copy } from 'lucide-react';
+import { CATEGORY_STYLE } from '@/lib/categoryStyle';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
-
-const CATEGORY_STYLE = {
-  hvac: { color: '#0ea5e9', bg: 'bg-sky-50', text: 'text-sky-700', icon: Fan },
-  electrical: { color: '#f59e0b', bg: 'bg-amber-50', text: 'text-amber-700', icon: Zap },
-  mixed: { color: '#8b5cf6', bg: 'bg-violet-50', text: 'text-violet-700', icon: Zap }
-};
 
 export default function Home() {
   const navigate = useNavigate();
@@ -19,7 +14,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   const templates = allDiagrams.filter((d) => d.is_template);
-  const diagrams = allDiagrams.filter((d) => !d.is_template);
+  const diagrams = allDiagrams.filter((d) => !d.is_template && !d.archived);
 
   const load = () => {
     setLoading(true);
@@ -36,6 +31,12 @@ export default function Home() {
     await base44.entities.WiringDiagram.delete(id);
     setAllDiagrams((d) => d.filter((x) => x.id !== id));
     toast({ title: 'Diagram deleted' });
+  };
+
+  const handleArchive = async (id) => {
+    await base44.entities.WiringDiagram.update(id, { archived: true });
+    setAllDiagrams((d) => d.map((x) => (x.id === id ? { ...x, archived: true } : x)));
+    toast({ title: 'Moved to archive' });
   };
 
   const handleNewFromTemplate = async (t) => {
@@ -66,6 +67,9 @@ export default function Home() {
         <div className="mb-8 flex flex-wrap gap-3">
           <Button onClick={() => navigate('/editor')} className="gap-1.5">
             <Plus className="h-4 w-4" /> New Diagram
+          </Button>
+          <Button variant="outline" onClick={() => navigate('/archive')} className="gap-1.5">
+            <ArchiveIcon className="h-4 w-4" /> Archive
           </Button>
         </div>
 
@@ -157,6 +161,13 @@ export default function Home() {
                           <Button variant="outline" size="sm" onClick={() => navigate(`/editor/${d.id}`)} className="gap-1.5">
                             <Pencil className="h-3.5 w-3.5" /> Open
                           </Button>
+                          <button
+                            onClick={() => handleArchive(d.id)}
+                            className="rounded-md p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+                            title="Move to archive"
+                          >
+                            <ArchiveIcon className="h-4 w-4" />
+                          </button>
                           <button
                             onClick={() => handleDelete(d.id)}
                             className="ml-auto rounded-md p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 transition"
