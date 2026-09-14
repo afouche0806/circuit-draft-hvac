@@ -170,15 +170,141 @@ const symbols = {
       {T(50, 30, '1~', 8)}
     </g>
   ),
-  breaker_3phase: (
-    <g {...S}>
-      {[24, 52, 80].map(breakerContact)}
-    </g>
-  ),
-  lamp: (
+  light: (
     <g {...S}>
       <circle cx={52} cy={27} r={14} />
       <path d="M44 19 L60 35 M60 19 L44 35" />
+    </g>
+  ),
+  light_switch: (
+    <g {...S}>
+      {dot(52, 12)}
+      {dot(52, 62)}
+      <path d="M52 14 L64 58" />
+    </g>
+  ),
+  breaker_10a: (
+    <g {...S}>
+      {breakerContact(52)}
+      {T(52, 20, '10A', 8)}
+    </g>
+  ),
+  breaker_20a: (
+    <g {...S}>
+      {breakerContact(52)}
+      {T(52, 20, '20A', 8)}
+    </g>
+  ),
+  main_3phase_breaker: (
+    <g {...S}>
+      {[24, 52, 80].map(breakerContact)}
+      {T(52, 20, 'MAIN', 8)}
+    </g>
+  ),
+  earth_leakage_63a: (
+    <g {...S}>
+      {[24, 40, 64, 80].map(breakerContact)}
+      {T(52, 20, '63A ELCB', 7)}
+    </g>
+  ),
+  single_plug: (
+    <g {...S}>
+      <path d="M32 40 A20 20 0 0 1 72 40 M32 40 H72 M44 40 V28 M60 40 V28 M52 6 V20 M52 40 V68" />
+    </g>
+  ),
+  double_plug: (
+    <g {...S}>
+      <path d="M32 40 A20 20 0 0 1 72 40 M32 40 H72 M44 40 V28 M60 40 V28 M40 6 V20 M64 6 V20 M52 40 V68" />
+    </g>
+  ),
+  downlighter: (
+    <g {...S}>
+      <path d="M20 20 L84 20 L74 50 L30 50 Z" />
+      <circle cx={52} cy={35} r={8} />
+    </g>
+  ),
+  '2way_light_switch': (
+    <g {...S}>
+      {dot(30, 20)}
+      {dot(52, 60)}
+      {dot(74, 20)}
+      <path d="M52 58 L30 22 M52 58 L74 22" />
+    </g>
+  ),
+  dimmer_switch: (
+    <g {...S}>
+      {dot(52, 35)}
+      <circle cx={52} cy={35} r={15} />
+      <path d="M52 20 V35 M52 35 L62 25" />
+    </g>
+  ),
+  ceiling_fan: (
+    <g {...S}>
+      <circle cx={52} cy={27} r={15} />
+      <path d="M52 27 L52 14 M52 27 L63 33 M52 27 L41 33" />
+    </g>
+  ),
+  extractor_fan: (
+    <g {...S}>
+      <rect x={20} y={15} width={64} height={30} rx={2} />
+      {T(52, 33, 'EXT', 10)}
+    </g>
+  ),
+  stove: (
+    <g {...S}>
+      <rect x={20} y={10} width={64} height={40} rx={4} />
+      {dot(40, 25)}
+      {dot(64, 25)}
+      {dot(40, 40)}
+      {dot(64, 40)}
+    </g>
+  ),
+  geyser: (
+    <g {...S}>
+      <rect x={30} y={10} width={44} height={40} rx={10} />
+      {T(52, 35, 'GEY', 10)}
+    </g>
+  ),
+  inverter: (
+    <g {...S}>
+      <rect x={20} y={15} width={64} height={30} rx={2} />
+      {T(52, 33, 'INV', 10)}
+    </g>
+  ),
+  solar_panels: (
+    <g {...S}>
+      <rect x={20} y={15} width={64} height={30} rx={2} />
+      <path d="M25 20 H79 M25 30 H79 M25 40 H79 M40 15 V45 M64 15 V45" />
+    </g>
+  ),
+  battery_12v: (
+    <g {...S}>
+      <rect x={30} y={20} width={44} height={25} rx={2} />
+      {T(52, 35, '12V', 10)}
+    </g>
+  ),
+  battery_24v: (
+    <g {...S}>
+      <rect x={30} y={20} width={44} height={25} rx={2} />
+      {T(52, 35, '24V', 10)}
+    </g>
+  ),
+  connecting_strip_10: (
+    <g {...S}>
+      <rect x={20} y={25} width={64} height={10} rx={2} />
+      {[25, 37, 50, 63, 76].map((x) => [27, 33].map((y) => dot(x, y, 1.5)))}
+    </g>
+  ),
+  x2_fan_condenser: (
+    <g {...S}>
+      <rect x={15} y={15} width={74} height={30} rx={2} />
+      {T(52, 33, 'x2', 10)}
+    </g>
+  ),
+  x3_fan_condenser: (
+    <g {...S}>
+      <rect x={15} y={15} width={74} height={30} rx={2} />
+      {T(52, 33, 'x3', 10)}
     </g>
   ),
   ground: (
