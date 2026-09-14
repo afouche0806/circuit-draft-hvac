@@ -52,6 +52,11 @@ const symbols = {
       <path d="M26 46 L32 10 M38 46 L44 10 M50 46 L56 10 M62 46 L68 10" strokeWidth={1} />
     </g>
   ),
+  heating_element: (
+    <g {...S}>
+      <path d="M20 37 L30 37 L35 47 L45 27 L55 47 L65 27 L75 47 L80 37 L90 37" strokeWidth={2} />
+    </g>
+  ),
   thermostat: (
     <g {...S}>
       <path d="M52 8 V36" />
