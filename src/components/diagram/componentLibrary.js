@@ -28,6 +28,8 @@ export const componentLibrary = [
       ] },
       { type: 'evaporator', label: 'Evaporator', icon: AirVent, color: '#0ea5e9', terminals: LR },
       { type: 'heating_element', label: 'Heating Element', icon: Zap, color: '#0ea5e9', terminals: LR },
+      { type: 'solenoid_valve', label: 'Solenoid Valve', icon: Zap, color: '#0ea5e9', terminals: LR },
+      { type: 'drain_heater', label: 'Drain Heater', icon: Zap, color: '#0ea5e9', terminals: LR },
       { type: 'blower_motor', label: 'Blower Motor', icon: Fan, color: '#0ea5e9', terminals: LR },
       { type: 'thermostat', label: 'Thermostat', icon: Thermometer, color: '#0ea5e9', terminals: LR },
       { type: 'digital_controller', label: 'Digital Controller', icon: Cpu, color: '#0ea5e9', terminals: [
@@ -57,6 +59,14 @@ export const componentLibrary = [
         { id: 'L3', side: 'top', offset: 0.8 },
         { id: '95', side: 'bottom', offset: 0.25 },
         { id: '96', side: 'bottom', offset: 0.75 }
+      ] },
+      { type: '3-phase_overload', label: '3-Phase Overload', icon: Shield, color: '#0ea5e9', terminals: [
+        { id: 'L1', side: 'top', offset: 0.2 },
+        { id: 'L2', side: 'top', offset: 0.5 },
+        { id: 'L3', side: 'top', offset: 0.8 },
+        { id: 'T1', side: 'bottom', offset: 0.2 },
+        { id: 'T2', side: 'bottom', offset: 0.5 },
+        { id: 'T3', side: 'bottom', offset: 0.8 }
       ] },
       { type: 'pressure_switch', label: 'Pressure Switch', icon: Gauge, color: '#0ea5e9', terminals: LR },
       { type: 'precision_timer', label: 'Precision Timer (Defrost)', icon: Timer, color: '#0ea5e9', terminals: [

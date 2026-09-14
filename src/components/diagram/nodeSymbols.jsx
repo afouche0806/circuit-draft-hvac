@@ -57,6 +57,25 @@ const symbols = {
       <path d="M20 37 L30 37 L35 47 L45 27 L55 47 L65 27 L75 47 L80 37 L90 37" strokeWidth={2} />
     </g>
   ),
+  solenoid_valve: (
+    <g {...S}>
+      <path d="M30 10 L74 10 L52 30 Z" />
+      <path d="M52 30 V60" />
+      <rect x={42} y={60} width={20} height={10} rx={1} />
+    </g>
+  ),
+  drain_heater: (
+    <g {...S}>
+      <path d="M20 30 Q35 15 52 30 T84 30" strokeWidth={2} />
+      <path d="M20 45 Q35 30 52 45 T84 45" strokeWidth={2} />
+    </g>
+  ),
+  '3-phase_overload': (
+    <g {...S}>
+      <rect x={20} y={15} width={64} height={30} rx={2} />
+      {T(52, 33, 'OL', 10)}
+    </g>
+  ),
   thermostat: (
     <g {...S}>
       <path d="M52 8 V36" />
