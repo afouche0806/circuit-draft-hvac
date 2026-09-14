@@ -9,6 +9,27 @@ import { NODE_W, NODE_H } from '@/components/diagram/componentLibrary';
 
 const PAD = 60;
 
+/**
+ * @typedef {Object} Node
+ * @property {number} x
+ * @property {number} y
+ */
+
+/**
+ * @typedef {Object} Line
+ * @property {number} x1
+ * @property {number} y1
+ * @property {number} x2
+ * @property {number} y2
+ */
+
+/**
+ * @param {Object} props
+ * @param {React.RefObject<HTMLDivElement>} props.canvasRef
+ * @param {Node[]} props.nodes
+ * @param {Line[]} props.lines
+ * @param {string} props.title
+ */
 export default function ExportButton({ canvasRef, nodes, lines, title }) {
   const { toast } = useToast();
   const [busy, setBusy] = useState(null);
