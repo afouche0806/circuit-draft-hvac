@@ -59,7 +59,7 @@ export const componentLibrary = [
         { id: 'NO', side: 'bottom', offset: 0.5 },
         { id: 'NC', side: 'bottom', offset: 0.8 }
       ] },
-      { type: 'contactor', label: 'Contactor', icon: Zap, color: '#0ea5e9', width: 50, terminals: [
+      { type: 'contactor', label: 'Contactor', icon: Zap, color: '#0ea5e9', terminals: [
         { id: 'L1', side: 'top', offset: 0.2 },
         { id: 'L2', side: 'top', offset: 0.5 },
         { id: 'L3', side: 'top', offset: 0.8 },
@@ -180,6 +180,16 @@ export const componentLibrary = [
       { type: 'junction', label: 'Junction', icon: CircleDot, color: '#f59e0b', width: 50, terminals: [
         { id: 'T1', side: 'top', offset: 0.25 }, { id: 'T2', side: 'top', offset: 0.75 },
         { id: 'B1', side: 'bottom', offset: 0.25 }, { id: 'B2', side: 'bottom', offset: 0.75 }
+      ] },
+      { type: 'neutral_bar', label: '8-Point Neutral Bar', icon: AlignJustify, color: '#1f2937', width: 104, terminals: [
+        { id: '1', side: 'top', offset: 0.15 },
+        { id: '2', side: 'top', offset: 0.25 },
+        { id: '3', side: 'top', offset: 0.35 },
+        { id: '4', side: 'top', offset: 0.45 },
+        { id: '5', side: 'top', offset: 0.55 },
+        { id: '6', side: 'top', offset: 0.65 },
+        { id: '7', side: 'top', offset: 0.75 },
+        { id: '8', side: 'top', offset: 0.85 }
       ] }
     ]
   }

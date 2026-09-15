@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Save, Trash2, LayoutTemplate } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, LayoutTemplate, Undo2, Redo2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import ExportButton from '@/components/diagram/ExportButton';
@@ -10,7 +10,7 @@ const CATEGORIES = [
   { value: 'mixed', label: 'Mixed', color: '#8b5cf6' }
 ];
 
-export default function Toolbar({ title, category, onTitleChange, onCategoryChange, onBack, onSave, onSaveAsTemplate, onDeleteSelected, hasSelection, saving, canvasRef, nodes, lines }) {
+export default function Toolbar({ title, category, onTitleChange, onCategoryChange, onBack, onSave, onSaveAsTemplate, onDeleteSelected, hasSelection, saving, canvasRef, nodes, lines, onUndo, onRedo, canUndo, canRedo }) {
   return (
     <header className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-2.5">
       <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
@@ -43,6 +43,15 @@ export default function Toolbar({ title, category, onTitleChange, onCategoryChan
       </div>
 
       <div className="flex-1" />
+
+      <div className="flex items-center gap-0.5 rounded-lg border border-slate-200 p-0.5">
+        <Button variant="ghost" size="sm" onClick={onUndo} disabled={!canUndo}>
+          <Undo2 className="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="sm" onClick={onRedo} disabled={!canRedo}>
+          <Redo2 className="h-4 w-4" />
+        </Button>
+      </div>
 
       {hasSelection && (
         <Button variant="outline" size="sm" onClick={onDeleteSelected} className="gap-1.5 text-red-600 hover:text-red-700 hover:bg-red-50">

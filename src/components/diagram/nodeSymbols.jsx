@@ -315,7 +315,7 @@ const symbols = {
   neutral_bar: (
     <g {...S}>
       <rect x={18} y={26} width={68} height={10} rx={2} />
-      {[26, 42, 58, 74].map((x) => dot(x, 31, 2.2))}
+      {[24, 32, 40, 48, 56, 64, 72, 80].map((x) => dot(x, 31, 2.2))}
     </g>
   ),
   fuse: (
