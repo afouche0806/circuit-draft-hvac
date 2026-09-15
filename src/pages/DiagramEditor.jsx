@@ -26,6 +26,7 @@ export default function DiagramEditor() {
   const [category, setCategory] = useState('hvac');
   const [nodes, setNodes] = useState([]);
   const [wires, setWires] = useState([]);
+  const [lines, setLines] = useState([]);
   const [labels, setLabels] = useState([]);
   const [tool, setTool] = useState(null);
   const [selectedNodes, setSelectedNodes] = useState(new Set());
@@ -47,8 +48,8 @@ export default function DiagramEditor() {
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
-  const saveToHistory = (newNodes, newWires, newLabels) => {
-    const newState = JSON.stringify({ nodes: newNodes, wires: newWires, labels: newLabels });
+  const saveToHistory = (newNodes, newWires, newLines, newLabels) => {
+    const newState = JSON.stringify({ nodes: newNodes, wires: newWires, lines: newLines, labels: newLabels });
     const newHistory = history.slice(0, historyIndex + 1);
     newHistory.push(newState);
     setHistory(newHistory);
@@ -79,7 +80,7 @@ export default function DiagramEditor() {
 
   useEffect(() => {
     if (!diagramId) {
-      saveToHistory([], [], []);
+      saveToHistory([], [], [], []);
       return;
     }
     setLoading(true);
@@ -88,15 +89,17 @@ export default function DiagramEditor() {
         setTitle(d.title || 'Untitled diagram');
         setCategory(d.category || 'hvac');
         try {
-          const parsed = JSON.parse(d.diagram_data || '{"nodes":[],"wires":[]}');
+          const parsed = JSON.parse(d.diagram_data || '{"nodes":[],"wires":[],"lines":[]}');
           setNodes(parsed.nodes || []);
           setWires(parsed.wires || []);
+          setLines(parsed.lines || []);
           setLabels(parsed.labels || []);
-          saveToHistory(parsed.nodes || [], parsed.wires || [], parsed.labels || []);
+          saveToHistory(parsed.nodes || [], parsed.wires || [], parsed.lines || [], parsed.labels || []);
         } catch {
           setNodes([]);
           setWires([]);
-          saveToHistory([], [], []);
+          setLines([]);
+          saveToHistory([], [], [], []);
         }
       })
       .finally(() => setLoading(false));
@@ -111,6 +114,14 @@ export default function DiagramEditor() {
       if (dragging.kind === 'label') {
         setLabels((ls) =>
           ls.map((l) => (l.id === dragging.id ? { ...l, x: dragging.origX + dx, y: dragging.origY + dy } : l))
+        );
+      } else if (dragging.kind === 'line') {
+        setLines((ls) =>
+          ls.map((l) =>
+            l.id === dragging.id
+              ? { ...l, x1: dragging.origX1 + dx, y1: dragging.origY1 + dy, x2: dragging.origX2 + dx, y2: dragging.origY2 + dy }
+              : l
+          )
         );
       } else if (dragging.type === 'nodes') {
         setNodes((ns) =>
@@ -225,7 +236,7 @@ export default function DiagramEditor() {
   };
 
   const onCanvasMouseDown = (e) => {
-    if (e.target === canvasRef.current || e.target.tagName === 'svg' || e.target.tagName === 'rect') {
+    if (e.target === canvasRef.current || e.target.tagName?.toLowerCase() === 'svg' || e.target.tagName?.toLowerCase() === 'rect') {
       if (tool === 'text') {
         const pos = getCanvasPos(e);
         const nl = { id: uid(), x: pos.x, y: pos.y, text: '' };
@@ -277,7 +288,6 @@ export default function DiagramEditor() {
       setWires((ws) => ws.filter((w) => w.from.node !== node.id && w.to.node !== node.id));
       return;
     }
-    if (tool) return; // placing, not selecting
 
     let newSelection = new Set(selectedNodes);
 
@@ -346,10 +356,24 @@ export default function DiagramEditor() {
       setLines((ls) => ls.filter((l) => l.id !== lineId));
       return;
     }
+    const line = lines.find((l) => l.id === lineId);
+    if (!line) return;
+
     setSelectedLine(lineId);
     setSelectedNodes(new Set());
     setSelectedWire(null);
     setPendingTerm(null);
+
+    setDragging({
+      id: lineId,
+      kind: 'line',
+      startX: e.clientX,
+      startY: e.clientY,
+      origX1: line.x1,
+      origY1: line.y1,
+      origX2: line.x2,
+      origY2: line.y2
+    });
   };
 
   const onLabelBodyMouseDown = (e, label) => {

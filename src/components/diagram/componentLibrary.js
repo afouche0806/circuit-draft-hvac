@@ -96,6 +96,7 @@ export const componentLibrary = [
         { id: '96', side: 'top', offset: 0.95 }
       ] },
       { type: 'pressure_switch', label: 'Pressure Switch', icon: Gauge, color: '#0ea5e9', width: 50, terminals: LR },
+      { type: 'crankcase_heater', label: 'Crankcase Heater', icon: Zap, color: '#0ea5e9', width: 50, terminals: LR },
       { type: 'precision_timer', label: 'Precision Timer (Defrost)', icon: Timer, color: '#0ea5e9', width: 50, terminals: [
         { id: '1', side: 'top', offset: 0.25 },
         { id: '2', side: 'top', offset: 0.75 },
