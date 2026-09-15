@@ -2,7 +2,21 @@
 
 Use this repository to run and edit the app locally, then publish changes back through Base44.
 
-Any change pushed to the repo will also be reflected in the Base44 Builder.
+**Important:** To sync changes automatically to Base44, this project must be connected to a remote Git repository (e.g., GitHub).
+
+## Setup & Deployment
+
+1. **Initialize Git Remote:** If not already configured, add a remote repository:
+   ```bash
+   git remote add origin <your-repository-url>
+   git push -u origin main
+   ```
+2. **Commit and Push:** Commit your local changes and push to your remote repository.
+3. **Publish via Dashboard:** Once pushed, open the Base44 dashboard:
+   ```bash
+   base44 dashboard open
+   ```
+   Then click **Publish** in the dashboard.
 
 ## Prerequisites
 
@@ -43,16 +57,6 @@ base44 dev --remote
 
 ⚠️ In this mode writes go to your app's **production data** — plain `base44 dev` keeps everything local.
 
-## Publish Your Changes
-
-After pushing your changes to git, open the Base44 dashboard and publish the app:
-
-```bash
-base44 dashboard open
-```
-
-This repo syncs to Base44 through git, so publish from the dashboard rather than `base44 deploy` — a CLI deploy ships your local tree directly, bypassing the sync, and the deployed state silently diverges from the repo.
-
 ## Docs & Support
 
 GitHub integration: [https://docs.base44.com/developers/app-code/local-development/github](https://docs.base44.com/developers/app-code/local-development/github)
@@ -60,3 +64,4 @@ GitHub integration: [https://docs.base44.com/developers/app-code/local-developme
 Local development: [https://docs.base44.com/developers/backend/overview/local-dev/local-development-overview](https://docs.base44.com/developers/backend/overview/local-dev/local-development-overview)
 
 Support: [https://app.base44.com/support](https://app.base44.com/support)
+# circuit-draft-hvac
