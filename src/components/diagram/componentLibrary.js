@@ -1,7 +1,7 @@
 import {
   Cpu, Fan, AirVent, Thermometer, Zap, BatteryCharging, ToggleLeft,
-  ArrowLeftRight, Gauge, Battery, Minus, Plug, Shield, Lightbulb, Cog,
-  CircleDot, Triangle, Layers, AlignJustify, Timer, ZapOff
+  ArrowLeftRight, Gauge, Battery, Plug, Shield, Lightbulb, Cog,
+  CircleDot, Layers, AlignJustify, Timer, ZapOff
 } from 'lucide-react';
 
 const LR = [{ id: 'L', side: 'top' }, { id: 'R', side: 'bottom' }];

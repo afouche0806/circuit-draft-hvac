@@ -17,14 +17,13 @@ export default function DiagramNode({ node, selected, pendingTerm, removing, onB
       <div
         onMouseDown={(e) => {
           onBodyMouseDown(e);
-          onNodeMove(e, node);
         }}
         className={cn(
           "relative h-full w-full rounded-xl border-2 bg-white shadow-sm flex flex-col items-center justify-center gap-1 cursor-move transition-shadow",
           selected ? "border-sky-500 ring-2 ring-sky-200 shadow-md" : removing ? "border-red-300 hover:border-red-500 hover:bg-red-50" : "border-slate-300 hover:shadow-md"
         )}
       >
-        <svg className="absolute inset-0" viewBox={`0 0 ${w} ${NODE_H}`} width="100%" height="100%">
+        <svg className="absolute inset-0" viewBox="0 0 104 74" width="100%" height="100%">
           <NodeSymbol type={node.type} />
         </svg>
         <span className="absolute bottom-0.5 left-0 right-0 truncate px-1 text-center text-[9px] font-semibold leading-none text-slate-500">

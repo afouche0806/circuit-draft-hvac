@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trash2, PenLine, Type } from 'lucide-react';
+import { Trash2, Type } from 'lucide-react';
 import { componentLibrary } from '@/components/diagram/componentLibrary';
 import WireColorPicker from '@/components/diagram/WireColorPicker';
 import { cn } from '@/lib/utils';

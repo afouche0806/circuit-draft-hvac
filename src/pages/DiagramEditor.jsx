@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { componentMap, terminalPos, NODE_W, NODE_H } from '@/components/diagram/componentLibrary';
-import { routeWire, routeLine, pointsToPath, occupyPath } from '@/components/diagram/wireRouter';
+import { routeWire, pointsToPath, occupyPath } from '@/components/diagram/wireRouter';
 import ComponentPalette from '@/components/diagram/ComponentPalette';
 import DiagramNode from '@/components/diagram/DiagramNode';
 import Wire from '@/components/diagram/Wire';
@@ -236,39 +236,38 @@ export default function DiagramEditor() {
   };
 
   const onCanvasMouseDown = (e) => {
-    if (e.target === canvasRef.current || e.target.tagName?.toLowerCase() === 'svg' || e.target.tagName?.toLowerCase() === 'rect') {
-      if (tool === 'text') {
-        const pos = getCanvasPos(e);
-        const nl = { id: uid(), x: pos.x, y: pos.y, text: '' };
-        setLabels((ls) => [...ls, nl]);
-        setEditingLabel(nl.id);
-        setSelectedLabel(nl.id);
-        setSelectedNodes(new Set());
-        setSelectedWire(null);
-        setSelectedLine(null);
-        return;
-      }
-      if (tool === 'line') {
-        const pos = getCanvasPos(e);
-        const d = { x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y };
-        lineDraftRef.current = d;
-        setLinePreview(d);
-        return;
-      }
-      if (tool) {
-        const pos = getCanvasPos(e);
-        const newNode = { id: uid(), type: tool, x: pos.x - NODE_W / 2, y: pos.y - NODE_H / 2 };
-        const result = autoConnect(newNode, nodes, wires);
-        setNodes(result.nodes);
-        setWires(result.wires);
-        setSelectedNodes(new Set([newNode.id]));
-        setSelectedWire(null);
-        saveToHistory(result.nodes, result.wires, lines, labels);
-      } else {
-        setSelectedNodes(new Set());
-        setSelectedWire(null);
-        setPendingTerm(null);
-      }
+    if (!canvasRef.current.contains(e.target)) return;
+    if (tool === 'text') {
+      const pos = getCanvasPos(e);
+      const nl = { id: uid(), x: pos.x, y: pos.y, text: '' };
+      setLabels((ls) => [...ls, nl]);
+      setEditingLabel(nl.id);
+      setSelectedLabel(nl.id);
+      setSelectedNodes(new Set());
+      setSelectedWire(null);
+      setSelectedLine(null);
+      return;
+    }
+    if (tool === 'line') {
+      const pos = getCanvasPos(e);
+      const d = { x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y };
+      lineDraftRef.current = d;
+      setLinePreview(d);
+      return;
+    }
+    if (tool) {
+      const pos = getCanvasPos(e);
+      const newNode = { id: uid(), type: tool, x: pos.x - NODE_W / 2, y: pos.y - NODE_H / 2 };
+      const result = autoConnect(newNode, nodes, wires);
+      setNodes(result.nodes);
+      setWires(result.wires);
+      setSelectedNodes(new Set([newNode.id]));
+      setSelectedWire(null);
+      saveToHistory(result.nodes, result.wires, lines, labels);
+    } else {
+      setSelectedNodes(new Set());
+      setSelectedWire(null);
+      setPendingTerm(null);
     }
   };
 
@@ -480,13 +479,11 @@ export default function DiagramEditor() {
 
   const hasSelection = !!(selectedNodes.size > 0 || selectedWire || selectedLine || selectedLabel);
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-800" />
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="flex h-screen items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-800" />
+    </div>
+  );
 
   return (
     <div className="flex h-screen flex-col bg-slate-50">

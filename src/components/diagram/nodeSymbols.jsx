@@ -124,6 +124,12 @@ const symbols = {
       {T(38, 42, 'PS', 9)}
     </g>
   ),
+  crankcase_heater: (
+    <g {...S}>
+      <path d="M30 45 Q52 20 74 45" strokeWidth={2} />
+      {T(52, 25, 'CCH', 9)}
+    </g>
+  ),
   precision_timer: (
     <g {...S}>
       <rect x={28} y={8} width={48} height={40} rx={4} />
