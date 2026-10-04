@@ -105,7 +105,7 @@ export default function DiagramEditor() {
       .finally(() => setLoading(false));
   }, [diagramId]);
 
-  // Dragging a node
+  // Dragging a node or label or line
   useEffect(() => {
     if (!dragging) return;
     const onMove = (e) => {
@@ -125,18 +125,26 @@ export default function DiagramEditor() {
         );
       } else if (dragging.type === 'nodes') {
         setNodes((ns) =>
-          ns.map((n) => (dragging.ids.includes(n.id) ? { ...n, x: dragging.origPositions[n.id].x + dx, y: dragging.origPositions[n.id].y + dy } : n))
+          ns.map((n) => {
+            if (!dragging.ids.includes(n.id)) return n;
+            const orig = dragging.origPositions[n.id];
+            if (!orig) return n;
+            return { ...n, x: orig.x + dx, y: orig.y + dy };
+          })
         );
       }
     };
-    const onUp = () => setDragging(null);
+    const onUp = () => {
+      setDragging(null);
+      saveToHistory(nodes, wires, lines, labels);
+    };
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
     return () => {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
     };
-  }, [dragging, zoom]);
+  }, [dragging, zoom, nodes, wires, lines, labels]);
 
   // Undo/Redo & Delete key
   useEffect(() => {
@@ -239,13 +247,15 @@ export default function DiagramEditor() {
     if (!canvasRef.current.contains(e.target)) return;
     if (tool === 'text') {
       const pos = getCanvasPos(e);
-      const nl = { id: uid(), x: pos.x, y: pos.y, text: '' };
-      setLabels((ls) => [...ls, nl]);
+      const nl = { id: uid(), x: pos.x, y: pos.y, text: 'Label' };
+      const nextLabels = [...labels, nl];
+      setLabels(nextLabels);
       setEditingLabel(nl.id);
       setSelectedLabel(nl.id);
       setSelectedNodes(new Set());
       setSelectedWire(null);
       setSelectedLine(null);
+      saveToHistory(nodes, wires, lines, nextLabels);
       return;
     }
     if (tool === 'line') {
@@ -397,7 +407,9 @@ export default function DiagramEditor() {
 
   const endLabelEdit = () => {
     setEditingLabel(null);
-    setLabels((ls) => ls.filter((l) => l.text.trim() !== ''));
+    const nextLabels = labels.map((l) => (l.id === editingLabel && !l.text.trim() ? { ...l, text: 'Label' } : l)).filter((l) => l.text.trim() !== '');
+    setLabels(nextLabels);
+    saveToHistory(nodes, wires, lines, nextLabels);
   };
 
   const onLabelTextChange = (id, text) => {
