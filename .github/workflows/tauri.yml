@@ -38,8 +38,11 @@ jobs:
       - name: Install npm dependencies
         run: npm install
 
+      - name: Install Tauri CLI
+        run: npm install -g @tauri-apps/cli
+
       - name: Build Tauri App
-        run: npx tauri build
+        run: tauri build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
