@@ -9,7 +9,7 @@ Use this repository to run and edit the app locally, then publish changes back t
 1. **Initialize Git Remote:** If not already configured, add a remote repository:
    ```bash
    git remote add origin <your-repository-url>
-   git push -u origin main
+   git push -u origin master
    ```
 2. **Commit and Push:** Commit your local changes and push to your remote repository.
 3. **Publish via Dashboard:** Once pushed, open the Base44 dashboard:
